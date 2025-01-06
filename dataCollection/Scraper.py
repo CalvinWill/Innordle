@@ -153,14 +153,14 @@ def fetch_character_info(input_csv, output_csv):
                         if key == "Aliases":
                             infobox_title = char_soup.select_one('.infobox-title')
                             if infobox_title:
-                                info["Name"] = f"{infobox_title.get_text(strip=True)} | {value}"  # Combine title and aliases
+                                info["Name"] = f"{infobox_title.get_text(strip=False)} | {value}"  # Combine title and aliases
                         if key in info:
                             info[key] = value
                 
                 # If the "Aliases" row is not present, try to add the title directly to the name
                 infobox_title = char_soup.select_one('.infobox-title')
                 if infobox_title and not info["Name"]:  # Only add the title if Name is not already set
-                    info["Name"] = f"{infobox_title.get_text(strip=True)} | "
+                    info["Name"] = f"{infobox_title.get_text(strip=False)} | "
 
 
                 # Write the result to the CSV file periodically
