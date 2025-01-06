@@ -8,7 +8,7 @@ def fetch_character_info(input_csv, output_csv):
     base_url = "https://wiki.wanderinginn.com/"
 
     # Read names from input CSV
-    with open(input_csv, 'r') as file:
+    with open(input_csv, 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
         names = [row[0].strip() for row in reader]  # Assumes names are in the first column
 
@@ -42,7 +42,7 @@ def fetch_character_info(input_csv, output_csv):
                 if soup.find('div', class_='searchresults') or soup.find('h1', class_='firstHeading', string="Search Results"):
                     search_results = soup.select('.mw-search-result-heading > a')
                     if search_results:
-                        tqdm.write(f"Search results for {name}:")
+                        tqdm.write(f"\nSearch results for {name}:")
                         for i, link in enumerate(search_results, start=1):
                             result_name = link.get_text(strip=True)
                             tqdm.write(f"{i}: {result_name}")
@@ -77,10 +77,10 @@ def fetch_character_info(input_csv, output_csv):
                     if disambig_section:
                         disambiguation_list = disambig_section.select('ul li a')
                         if disambiguation_list:
-                            tqdm.write(f"Disambiguation results for {name}:")
+                            tqdm.write(f"\nDisambiguation results for {name}:")
                             for i, link in enumerate(disambiguation_list, start=1):
                                 result_name = link.get_text(strip=True)
-                                tqdm.write(f"{i}: {result_name} ({link['href']})")
+                                tqdm.write(f"{i}: {link['href']}")
                             tqdm.write("Enter the number of the correct match (or 0 to skip): ")
 
                             try:
