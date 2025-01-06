@@ -44,7 +44,7 @@ def fetch_character_info(input_csv, output_csv):
                     if search_results:
                         tqdm.write(f"\nSearch results for {name}:")
                         for i, link in enumerate(search_results, start=1):
-                            result_name = link.get_text(strip=True)
+                            result_name = link.get_text(strip=False)
                             tqdm.write(f"{i}: {result_name}")
                         tqdm.write("Enter the number of the correct match (or 0 to skip): ")
 
