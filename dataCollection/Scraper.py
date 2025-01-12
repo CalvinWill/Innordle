@@ -41,10 +41,52 @@ def fetch_character_info(input_csv, output_csv):
                 # Detect search results
                 if soup.find('div', class_='searchresults') or soup.find('h1', class_='firstHeading', string="Search Results"):
                     search_results = soup.select('.mw-search-result-heading > a')
-                    if search_results:
-                        tqdm.write(f"\nSearch results for {name}:")
-                        for i, link in enumerate(search_results, start=1):
-                            result_name = link.get_text(strip=False)
+                    valid_results = [link for link in search_results if name.lower() in link.get_text(strip=True).lower()]
+                    
+                    if valid_results:
+                        tqdm.write(f"Search results for {name}:")
+                        for i, link in enumerate(valid_results, start=1):
+                            result_name = link.get_text(strip=True)
+                            tqdm.write(f"{i}: {result_name}")
+                        tqdm.write("Enter the number of the correct match (or 0 to skip): ")
+                        
+                        try:
+                            choice = int(input())
+                        except ValueError:
+                            tqdm.write("Invalid input. Skipping...")
+                            progress_bar.update(1)
+                            writer.writerow(info)
+                            continue
+
+                        if choice == 0:
+                            tqdm.write(f"Skipping {name}.")
+                            progress_bar.update(1)
+                            writer.writerow(info)
+                            continue
+
+                        try:
+                            character_url = base_url + valid_results[choice - 1]['href']
+                        except IndexError:
+                            tqdm.write("Invalid choice. Skipping...")
+                            progress_bar.update(1)
+                            writer.writerow(info)
+                            continue
+                    else:
+                        tqdm.write(f"No valid search results found for {name}. Skipping...")
+                        progress_bar.update(1)
+                        writer.writerow(info)
+                        continue
+
+
+                # Detect disambiguation page
+                elif soup.find('div', id='disambig'):
+                    disambiguation_list = soup.select('div.mw-parser-output > ul > li > a')
+                    valid_disambiguation = [link for link in disambiguation_list if name.lower() in link.get_text(strip=True).lower()]
+
+                    if valid_disambiguation:
+                        tqdm.write(f"Disambiguation results for {name}:")
+                        for i, link in enumerate(valid_disambiguation, start=1):
+                            result_name = link.get_text(strip=True)
                             tqdm.write(f"{i}: {result_name}")
                         tqdm.write("Enter the number of the correct match (or 0 to skip): ")
 
@@ -53,58 +95,27 @@ def fetch_character_info(input_csv, output_csv):
                         except ValueError:
                             tqdm.write("Invalid input. Skipping...")
                             progress_bar.update(1)
+                            writer.writerow(info)
                             continue
 
                         if choice == 0:
                             tqdm.write(f"Skipping {name}.")
                             progress_bar.update(1)
+                            writer.writerow(info)
                             continue
 
                         try:
-                            character_url = base_url + search_results[choice - 1]['href']
+                            character_url = base_url + valid_disambiguation[choice - 1]['href']
                         except IndexError:
                             tqdm.write("Invalid choice. Skipping...")
                             progress_bar.update(1)
+                            writer.writerow(info)
                             continue
                     else:
-                        tqdm.write(f"No search results found for {name}. Skipping...")
+                        tqdm.write(f"No valid disambiguation links found for {name}. Skipping...")
                         progress_bar.update(1)
+                        writer.writerow(info)
                         continue
-
-                # Detect disambiguation page
-                elif soup.find('div', id='disambig'):
-                    disambig_section = soup.find('section', class_='section-collapsible', id='section-collapsible-0')
-                    if disambig_section:
-                        disambiguation_list = disambig_section.select('ul li a')
-                        if disambiguation_list:
-                            tqdm.write(f"\nDisambiguation results for {name}:")
-                            for i, link in enumerate(disambiguation_list, start=1):
-                                result_name = link.get_text(strip=True)
-                                tqdm.write(f"{i}: {link['href']}")
-                            tqdm.write("Enter the number of the correct match (or 0 to skip): ")
-
-                            try:
-                                choice = int(input())
-                            except ValueError:
-                                tqdm.write("Invalid input. Skipping...")
-                                progress_bar.update(1)
-                                continue
-
-                            if choice == 0:
-                                tqdm.write(f"Skipping {name}.")
-                                progress_bar.update(1)
-                                continue
-
-                            try:
-                                character_url = base_url + disambiguation_list[choice - 1]['href']
-                            except IndexError:
-                                tqdm.write("Invalid choice. Skipping...")
-                                progress_bar.update(1)
-                                continue
-                        else:
-                            tqdm.write(f"No disambiguation links found for {name}. Skipping...")
-                            progress_bar.update(1)
-                            continue
 
 
 
@@ -118,11 +129,13 @@ def fetch_character_info(input_csv, output_csv):
                 except requests.exceptions.RequestException as e:
                     tqdm.write(f"Failed to fetch character page for {name}. Error: {e}")
                     progress_bar.update(1)
+                    writer.writerow(info)
                     continue
 
                 if char_response.status_code != 200:
                     tqdm.write(f"Failed to fetch character page for {name}. Status code: {char_response.status_code}")
                     progress_bar.update(1)
+                    writer.writerow(info)
                     continue
 
                 char_soup = BeautifulSoup(char_response.content, 'html.parser')
@@ -133,6 +146,7 @@ def fetch_character_info(input_csv, output_csv):
                 if not infobox_table:
                     tqdm.write(f"No info table found for {name}. Skipping...")
                     progress_bar.update(1)
+                    writer.writerow(info)
                     continue
 
 
