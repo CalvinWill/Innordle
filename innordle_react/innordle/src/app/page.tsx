@@ -1,101 +1,63 @@
-import Image from "next/image";
+import Image from "next/image"; 
+import Game from "./Components/Game";
+import { parse } from "csv-parse/sync"
+import * as fs from 'fs'
+import background_img from '../app/innordle_background.jpg'
 
+
+const INPUT_PATH = './mock_data/temp_sheet.csv'
+const DEBUGGING = false;
+
+/**
+ * Performs data loading outside of rendering the game so it only happens once.
+ * @returns <Game>
+ */
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  //// Recieve correct answer of the day from API (Might need loading bar)
+  // Use parser to read in data 
+  let file : null | string = null;
+  file = fs.readFileSync(INPUT_PATH, 'utf8');
+  const tempData : null | string[][] = parse(file, {});
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+  // Confirm data was read in correctly
+  if (tempData === null) {
+    throw new Error("Didn't read in any characters")
+  }
+
+  // Organize and store data for use later
+  let allCharacterData: Map<string, string[]> = new Map<string, string[]>()
+
+  for (let i = 1; i < tempData.length; i++) {
+    let row: string[] = tempData[i];
+    allCharacterData.set(row[0], row.slice(1));
+  }
+  const todaysAnswer: string = "Ryoka";
+
+  if (DEBUGGING) {  
+    const todaysAnswerDetails: string[] | undefined = allCharacterData.get(todaysAnswer);
+    if (todaysAnswerDetails === undefined) {
+      console.log('Selected character does not have info')
+    }
+    else {
+      console.log(todaysAnswerDetails);
+      console.log(`Today's Answer: ${todaysAnswer}`);
+      console.log(`Today's Answer Aliases: ${todaysAnswerDetails[0].split(" |")}`);
+      console.log(`Today's Answer Fighting Type: ${todaysAnswerDetails[todaysAnswerDetails.length-1].split(" |")}`);
+    }
+  }
+
+
+  return <div className="background bg-cover bg-center flex justify-center"
+              style={{
+                height: "100vh",
+                backgroundAttachment: "fixed",
+                backgroundPosition: "center",
+                backgroundImage: `url(https://static.wixstatic.com/media/94aeec_7f348c6465ca474aa9503b3640e76faf~mv2.jpg/v1/fill/w_1290,h_885,al_c,q_90/file.jpg)`
+              }}> 
+              <div className="game-container overflow-y-scroll w-full h-full">
+                <Game todaysAnswer={todaysAnswer} allCharacterData={allCharacterData}></Game>
+              </div>
+          </div> 
 }
+
+
