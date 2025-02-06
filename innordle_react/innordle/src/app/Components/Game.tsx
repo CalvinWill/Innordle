@@ -16,8 +16,9 @@ interface GameProps {
  * @returns 
  */
 export default function Game({todaysAnswer, allCharacterData} : GameProps) {
-  //TODO: THIS IS TO MAKE THE PROGRAM WORK, PLEASE REMOVE SOON
-  const [history, setHistory] = useState(["Erin"]);
+  //TODO: TELL ERIC HE SUCKS
+  const initialHistory: string[] =[];
+  const [history, setHistory] = useState(initialHistory);
   const [finished, setFinished] = useState(false);
 
 

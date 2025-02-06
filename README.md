@@ -12,7 +12,7 @@ npm run dev
 
 This includes whether the characters are randomly picked or by choice or daily. Would probably require some sort of backend!
 
-- Rework search functionality to be faster and correct
+- Rework search functionality to be faster and correct -> complete
 
 Ideally we can have little profile photos next to each search entry to make it clearer. Also, the search is for "names containing letter x" instead of "names beginning with letter x". Should also speed up search somehow (maybe cache search results before loading the inputbox?)
 
@@ -35,6 +35,10 @@ This involves hand-creating hints for each of the characters, which I'm not sure
 - Add spoiler mode
 
 This would just hide the category of whether the character is dead or alive
+
+- Make it so that empty boxes are "Unknown"
+
+Duuuuuuuh
 
 - Add more modes!
 

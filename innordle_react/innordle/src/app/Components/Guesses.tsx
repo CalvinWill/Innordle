@@ -173,29 +173,33 @@ export default function GuessContainer({allCharacterData, history, onGuess, toda
               response = responseDetail!;
               content = guessDetailsMap.get(category)!.join(", "); // sin of exclamation mark!!
             }
-            return <GuessDetail type={type} content={content} response={response} key={index}></GuessDetail>;
+            return <GuessDetail guess={guess} type={type} content={content} response={response} key={index}></GuessDetail>;
           })
         }
       </div>
     )
 
-    function GuessDetail({type, response, content}: {type: string, response: string, content: string}) {
-      // Determine what css to apply and how to apply content depending on the given props
+    function GuessDetail({guess, type, response, content}: {guess: string, type: string, response: string, content: string}) {
+      // Determine what css to apply and how to apply content depending on the given 
       const generic_styling = "hover:brightness-90 flex items-center justify-center text-center border border-gray-600 rounded w-24 h-24 "
       switch (type) {
         case "Image":
-          // There is no image link for this character
           if (content === "") {
-            return <div className={generic_styling}>
-                    No Photo Available!
-                   </div>
+            return (
+              <div className={generic_styling}>
+                {guess}
+              </div>
+            );
+          } else {
+            return (
+              <div className={`${generic_styling} relative group`}>
+                <img className="w-full h-full object-cover rounded" src={content} alt="Profile Photo" />
+                <div className="absolute inset-0 bg-white text-black flex items-center justify-center font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  {guess}
+                </div>
+              </div>
+            );
           }
-          else {
-            return  <div className={generic_styling}>
-                      <img className={"w-full h-full object-cover rounded"} src={content} alt="Profile Photo"></img>
-                    </div>
-          }
-          
         case "Scalar":
           let scalarStyling = "";
           switch (response) {
@@ -237,6 +241,30 @@ export default function GuessContainer({allCharacterData, history, onGuess, toda
             case "Match":
               categoryStyling = "bg-green-500"
               break;
+          }
+          switch (Math.floor(content.length/10)) {
+            case 9:
+              categoryStyling += " text-[11px]"
+              break;
+            case 8:
+              categoryStyling += " text-[11px]"
+              break;
+            case 7:
+              categoryStyling += " text-[11px]"
+              break;
+            case 6:
+              categoryStyling += " text-[13px]"
+              break;
+            case 5:
+              categoryStyling += " text-[13px]"
+              break;
+            case 4:
+              categoryStyling += " text-[14px]"
+              break;
+            case 3:
+              categoryStyling += " text-[14px]"
+              break;
+
           }
           return  <div className={generic_styling + categoryStyling}>
                     <span>{content}</span>
@@ -398,7 +426,7 @@ export default function GuessContainer({allCharacterData, history, onGuess, toda
           if (elementsInCommon === 0) {
             categoryAns = "None"
           }
-          else if (elementsInCommon === answerSet.size) {
+          else if (elementsInCommon === answerSet.size && elementsInCommon === guessSet.size) {
             categoryAns = "Match"
           }
           else {

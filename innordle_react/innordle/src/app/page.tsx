@@ -31,7 +31,13 @@ export default function Home() {
     let row: string[] = tempData[i];
     allCharacterData.set(row[0], row.slice(1));
   }
-  const todaysAnswer: string = "Ryoka";
+
+  const keys = Array.from(allCharacterData.keys());
+  const randomIndex = Math.floor(Math.random() * keys.length);
+  const todaysAnswer: string = keys[randomIndex];;
+  console.log(todaysAnswer);
+  console.log(todaysAnswer);
+  console.log(todaysAnswer);
 
   if (DEBUGGING) {  
     const todaysAnswerDetails: string[] | undefined = allCharacterData.get(todaysAnswer);

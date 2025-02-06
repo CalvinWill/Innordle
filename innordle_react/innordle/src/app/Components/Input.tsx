@@ -24,8 +24,31 @@ function InputBar({allCharacterData, history, onGuess} : InputContainerProps) {
     }
     
     let options: string[] = names
-    .filter(name => !history.includes(name))
-    .filter(name => name.toLowerCase().includes(input.toLowerCase()));
+        .filter(name => !history.includes(name))
+        .filter(name => name.toLowerCase().includes(input.toLowerCase()))
+        .sort((a, b) => {
+            const lowerInput = input.toLowerCase();
+            const aStarts = a.toLowerCase().startsWith(lowerInput);
+            const bStarts = b.toLowerCase().startsWith(lowerInput);
+
+
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+
+            // Extract the first integer from the comma-separated string
+            const extractPriority = (name: string): number => {
+            const data = allCharacterData.get(name);
+            if (!data) return -Infinity; // Default to lowest priority if no data exists
+            const firstEntry = data[12]; // Extract the twelth part before a comma
+            return parseInt(firstEntry, 10) || -Infinity; // Convert to number, default to -Infinity if NaN
+            };
+
+            const priorityA = extractPriority(a);
+            const priorityB = extractPriority(b);
+
+            return priorityB - priorityA || a.localeCompare(b); // Higher numbers first, then alphabetical
+        });
+
 
     // Only show options that have characters we've typed in
     function handleSubmit(guess: string) {
