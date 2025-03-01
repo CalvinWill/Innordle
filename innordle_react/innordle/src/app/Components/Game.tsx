@@ -4,6 +4,7 @@ import { useState } from "react";
 import HintContainer from "./Hints";
 import GuessContainer from "./Guesses";
 import WinScreen from "./WinScreen";
+import background_img from "../twi-logo-fancy.png";
 
 interface GameProps {
   todaysAnswer: string, 
@@ -36,8 +37,10 @@ export default function Game({todaysAnswer, allCharacterData} : GameProps) {
 
   return (
     <div className="game justify-center">
-      Definitely not a rip-off of Smashdle™
       <HintContainer></HintContainer>
+      <div className="flex justify-center mb-4">
+        <img src={background_img.src} alt="Background" className="w-full max-w-md rounded-2xl" />
+      </div>
       <GuessContainer 
         allCharacterData={allCharacterData} 
         history={history} 

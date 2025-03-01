@@ -32,6 +32,11 @@ Right now a lot of the logic for what the squares display and changing what they
 
 This involves hand-creating hints for each of the characters, which I'm not sure we're gonna do. We could just not include some of the categories and include them as hints!
 
+- Remove hints
+
+This involves hand-deleting hints for each of the characters, which we're not gonna do. 
+
+
 - Add spoiler mode
 
 This would just hide the category of whether the character is dead or alive

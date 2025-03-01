@@ -27,14 +27,26 @@ export default function Home() {
   // Organize and store data for use later
   let allCharacterData: Map<string, string[]> = new Map<string, string[]>()
 
-  for (let i = 1; i < tempData.length; i++) {
+
+  for (let i = 0; i < tempData.length; i++) {
     let row: string[] = tempData[i];
     allCharacterData.set(row[0], row.slice(1));
   }
 
-  const keys = Array.from(allCharacterData.keys());
+  const maxdifficulty = 3
+  
+
+  const filteredData = new Map(
+    [...allCharacterData.entries()].filter(
+      ([_, values]) => values[11] !== undefined && Number(values[11]) <= maxdifficulty
+    )
+  );
+
+  const keys = Array.from(filteredData.keys());
   const randomIndex = Math.floor(Math.random() * keys.length);
-  const todaysAnswer: string = keys[randomIndex];;
+  const todaysAnswer: string = keys[randomIndex];
+  //const todaysAnswer: string = "Rhaldon"
+
   console.log(todaysAnswer);
   console.log(todaysAnswer);
   console.log(todaysAnswer);
