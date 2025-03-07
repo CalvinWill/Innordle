@@ -9,12 +9,14 @@ interface GuessContainerProps {
   todaysAnswer: string
   finished: boolean
   difficulties: number[]
+  onReset: (newAnswer?: string, newDifficulties?: number[]) => void; // Accept reset function
 }
 interface GuessBoxProps {
   allCharacterData: Map<string, string[]>,
   history: string[],
   onGuess: (guess: string) => void,
-  difficultyLevels: number[]
+  difficultyLevels: number[],
+  resetFunc: (newAnswer?: string, newDifficulties?: number[]) => void;
 }
 
 interface GuessesProps {
@@ -93,22 +95,44 @@ const DEBUGGING = true;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// Begin component declaration
-export default function GuessContainer({ allCharacterData, history, onGuess, todaysAnswer, finished, difficulties }: GuessContainerProps) {
+export default function GuessContainer({ allCharacterData, history, onGuess, todaysAnswer, finished, difficulties, onReset}: GuessContainerProps) {
+
   return (
     <div className="guess-container flex flex-col items-center justify-center w-full">
-      {!finished && (
-        <Guessbox allCharacterData={allCharacterData} history={history} onGuess={onGuess} difficultyLevels={difficulties}></Guessbox>
-      )}
+
+      <Guessbox allCharacterData={allCharacterData} history={history} onGuess={onGuess} difficultyLevels={difficulties} resetFunc={onReset}></Guessbox>
       <Guesses allCharacterData={allCharacterData} history={history} todaysAnswer={todaysAnswer}></Guesses>
     </div>
   )
 }
 
 // Add difficulty settings gear to the inputContainer
-function Guessbox({ allCharacterData, history, onGuess, difficultyLevels}: GuessBoxProps) {
+function Guessbox({ allCharacterData, history, onGuess, difficultyLevels, resetFunc}: GuessBoxProps) {
+  
+  function handleResetClick() {
+    
+    const filteredData = new Map(
+      [...allCharacterData.entries()].filter(
+        ([_, values]) => values[11] !== undefined && difficultyLevels.includes(Number(values[11]))
+      )
+    );
+  
+    const keys = Array.from(filteredData.keys());
+    const randomIndex = Math.floor(Math.random() * keys.length);
+    const todaysAnswer: string = keys[randomIndex];
+    console.log(todaysAnswer);
+    resetFunc(todaysAnswer); // Call reset when needed
+  }
+
   return (
     <div className="guessbox flex justify-center w-full my-4">
       <InputContainer allCharacterData={allCharacterData} history={history} onGuess={onGuess}></InputContainer>
+      <button 
+        onClick={handleResetClick} 
+        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200 shadow-md">
+        Reset Game
+      </button>
+
     </div>
   )
 }

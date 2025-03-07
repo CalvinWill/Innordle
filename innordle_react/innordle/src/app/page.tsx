@@ -3,6 +3,7 @@ import Game from "./Components/Game";
 import { parse } from "csv-parse/sync"
 import * as fs from 'fs'
 import background_img from '../app/innordle_background.jpg'
+import GameWrapper from "./Components/GameWrapper";
 
 
 const INPUT_PATH = './mock_data/temp_sheet.csv'
@@ -33,20 +34,17 @@ export default function Home() {
     allCharacterData.set(row[0], row.slice(1));
   }
 
-  const maxdifficulty = 3
-  
+  const difficulties: number[] = [1, 2, 3];
 
   const filteredData = new Map(
     [...allCharacterData.entries()].filter(
-      ([_, values]) => values[11] !== undefined && Number(values[11]) <= maxdifficulty
+      ([_, values]) => values[11] !== undefined && difficulties.includes(Number(values[11]))
     )
   );
 
   const keys = Array.from(filteredData.keys());
   const randomIndex = Math.floor(Math.random() * keys.length);
   const todaysAnswer: string = keys[randomIndex];
-
-  let difficulties: number[] = [1, 2, 3]
   //const todaysAnswer: string = "Rhaldon"
 
   console.log(todaysAnswer);
@@ -75,7 +73,8 @@ export default function Home() {
                 backgroundImage: `url(https://static.wixstatic.com/media/94aeec_7f348c6465ca474aa9503b3640e76faf~mv2.jpg/v1/fill/w_1290,h_885,al_c,q_90/file.jpg)`
               }}> 
               <div className="game-container overflow-y-scroll w-full h-full">
-                <Game todaysAnswer={todaysAnswer} allCharacterData={allCharacterData} initialDifficulties={difficulties}></Game>
+                <GameWrapper initialAnswer={todaysAnswer} allCharacterData={allCharacterData} initialDifficulties={difficulties}></GameWrapper>
+                {/* <Game todaysAnswer={todaysAnswer} allCharacterData={allCharacterData} initialDifficulties={difficulties}></Game> */}
               </div>
           </div> 
 }

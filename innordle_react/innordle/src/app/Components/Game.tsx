@@ -6,30 +6,21 @@ import WinScreen from "./WinScreen";
 import background_img from "../twi-logo-fancy.png";
 
 interface GameProps {
-  todaysAnswer: string, 
-  allCharacterData: Map<string, string[]>,
-  initialDifficulties: number[]
+  todaysAnswer: string;
+  allCharacterData: Map<string, string[]>;
+  initialDifficulties: number[];
+  onReset: (newAnswer?: string, newDifficulties?: number[]) => void; // Pass down reset function
 }
 
-/**
- * 
- * @param param0 
- * @returns 
- */
-export default function Game({todaysAnswer, allCharacterData, initialDifficulties} : GameProps) {
-  //TODO: TELL ERIC HE SUCKS
-  const initialHistory: string[] =[];
-  const [history, setHistory] = useState(initialHistory);
+export default function Game({ todaysAnswer, allCharacterData, initialDifficulties, onReset }: GameProps) {
+  const [history, setHistory] = useState<string[]>([]);
   const [finished, setFinished] = useState(false);
 
-
   function handleGuess(guess: string): void {
-    // Add guess to the history
-    let newHistory: string[] = history.slice();
+    let newHistory = [...history];
     newHistory.unshift(guess);
     setHistory(newHistory);
 
-    // Check if game is won
     if (guess === todaysAnswer) {
       setFinished(true);
     }
@@ -40,19 +31,18 @@ export default function Game({todaysAnswer, allCharacterData, initialDifficultie
       <div className="flex justify-center mb-4">
         <img src={background_img.src} alt="Background" className="w-full max-w-md rounded-2xl" />
       </div>
-      <GuessContainer 
-        allCharacterData={allCharacterData} 
-        history={history} 
+      <GuessContainer
+        allCharacterData={allCharacterData}
+        history={history}
         onGuess={handleGuess}
         todaysAnswer={todaysAnswer}
         finished={finished}
-        difficulties={initialDifficulties}>
-      </GuessContainer>
-      {finished && (
-        <WinScreen todaysAnswer={todaysAnswer} history={history}></WinScreen>
-      )}
-
+        difficulties={initialDifficulties}
+        onReset={onReset} // Pass reset function
+      />
+      {finished && <WinScreen todaysAnswer={todaysAnswer} history={history} />}
     </div>
   );
 }
+
 
