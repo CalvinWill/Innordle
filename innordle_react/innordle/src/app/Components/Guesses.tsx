@@ -1,5 +1,6 @@
 import { Underdog } from "next/font/google"
 import InputContainer from "./Input"
+import SettingsGear from "./SettingsGear"
 
 //// Interfaces for Guesses Components
 interface GuessContainerProps {
@@ -132,6 +133,7 @@ function Guessbox({ allCharacterData, history, onGuess, difficultyLevels, resetF
         className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200 shadow-md">
         Reset Game
       </button>
+      <SettingsGear></SettingsGear>
 
     </div>
   )
