@@ -1,14 +1,14 @@
 "use client"
 
 import { useState } from "react";
-import HintContainer from "./Hints";
 import GuessContainer from "./Guesses";
 import WinScreen from "./WinScreen";
 import background_img from "../twi-logo-fancy.png";
 
 interface GameProps {
   todaysAnswer: string, 
-  allCharacterData: Map<string, string[]>
+  allCharacterData: Map<string, string[]>,
+  initialDifficulties: number[]
 }
 
 /**
@@ -16,7 +16,7 @@ interface GameProps {
  * @param param0 
  * @returns 
  */
-export default function Game({todaysAnswer, allCharacterData} : GameProps) {
+export default function Game({todaysAnswer, allCharacterData, initialDifficulties} : GameProps) {
   //TODO: TELL ERIC HE SUCKS
   const initialHistory: string[] =[];
   const [history, setHistory] = useState(initialHistory);
@@ -37,7 +37,6 @@ export default function Game({todaysAnswer, allCharacterData} : GameProps) {
 
   return (
     <div className="game justify-center">
-      <HintContainer></HintContainer>
       <div className="flex justify-center mb-4">
         <img src={background_img.src} alt="Background" className="w-full max-w-md rounded-2xl" />
       </div>
@@ -46,7 +45,8 @@ export default function Game({todaysAnswer, allCharacterData} : GameProps) {
         history={history} 
         onGuess={handleGuess}
         todaysAnswer={todaysAnswer}
-        finished={finished}>
+        finished={finished}
+        difficulties={initialDifficulties}>
       </GuessContainer>
       {finished && (
         <WinScreen todaysAnswer={todaysAnswer} history={history}></WinScreen>

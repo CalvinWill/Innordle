@@ -8,6 +8,14 @@ npm run dev
 
 ## TODO:
 ### Functionality (Listed in order of importance):
+
+- Add ability to reset game
+
+- Add some way to apply settings before starting game
+
+Includes Difficulty, and could also include which columns to include
+Difficulty can be a strict include 
+
 - Add options to change guessed characters
 
 This includes whether the characters are randomly picked or by choice or daily. Would probably require some sort of backend!
@@ -50,14 +58,14 @@ Duuuuuuuh
 Longshot. Shoot for the stars!
 
 ### Appearance (Listed in order of importance):
-- Add logo
+- Add logo -> Complete
 - Add background to arrows
 - Do something about the profile pictures
 - Add victory screen
-- Change font size when box is too small
+- Change font size when box is too small -> Complete
 - Add tooltips on hover
 - Create transparent textures for behind squares
-- Make search bar look nicer
+- Make search bar look nicer / remove autofill
 - Add favicon
 - Find a better font
 - Create stylized shading for background image 

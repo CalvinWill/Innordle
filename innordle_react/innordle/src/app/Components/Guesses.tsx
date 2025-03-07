@@ -8,11 +8,13 @@ interface GuessContainerProps {
   onGuess: (guess: string) => void,
   todaysAnswer: string
   finished: boolean
+  difficulties: number[]
 }
 interface GuessBoxProps {
   allCharacterData: Map<string, string[]>,
   history: string[],
   onGuess: (guess: string) => void,
+  difficultyLevels: number[]
 }
 
 interface GuessesProps {
@@ -91,18 +93,19 @@ const DEBUGGING = true;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// Begin component declaration
-export default function GuessContainer({ allCharacterData, history, onGuess, todaysAnswer, finished }: GuessContainerProps) {
+export default function GuessContainer({ allCharacterData, history, onGuess, todaysAnswer, finished, difficulties }: GuessContainerProps) {
   return (
     <div className="guess-container flex flex-col items-center justify-center w-full">
       {!finished && (
-        <Guessbox allCharacterData={allCharacterData} history={history} onGuess={onGuess}></Guessbox>
+        <Guessbox allCharacterData={allCharacterData} history={history} onGuess={onGuess} difficultyLevels={difficulties}></Guessbox>
       )}
       <Guesses allCharacterData={allCharacterData} history={history} todaysAnswer={todaysAnswer}></Guesses>
     </div>
   )
 }
 
-function Guessbox({ allCharacterData, history, onGuess }: GuessBoxProps) {
+// Add difficulty settings gear to the inputContainer
+function Guessbox({ allCharacterData, history, onGuess, difficultyLevels}: GuessBoxProps) {
   return (
     <div className="guessbox flex justify-center w-full my-4">
       <InputContainer allCharacterData={allCharacterData} history={history} onGuess={onGuess}></InputContainer>
