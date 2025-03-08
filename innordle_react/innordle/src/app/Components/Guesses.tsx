@@ -1,6 +1,8 @@
 import { Underdog } from "next/font/google"
 import InputContainer from "./Input"
 import SettingsGear from "./SettingsGear"
+import { useState } from "react";
+
 
 //// Interfaces for Guesses Components
 interface GuessContainerProps {
@@ -96,48 +98,107 @@ const DEBUGGING = true;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// Begin component declaration
-export default function GuessContainer({ allCharacterData, history, onGuess, todaysAnswer, finished, difficulties, onReset}: GuessContainerProps) {
+export default function GuessContainer({ allCharacterData, history, onGuess, todaysAnswer, finished, difficulties, onReset }: GuessContainerProps) {
 
   return (
     <div className="guess-container flex flex-col items-center justify-center w-full">
 
-      <Guessbox allCharacterData={allCharacterData} history={history} onGuess={onGuess} difficultyLevels={difficulties} resetFunc={onReset}></Guessbox>
+      <GuessBox allCharacterData={allCharacterData} history={history} onGuess={onGuess} difficultyLevels={difficulties} resetFunc={onReset}></GuessBox>
       <Guesses allCharacterData={allCharacterData} history={history} todaysAnswer={todaysAnswer}></Guesses>
     </div>
   )
 }
 
-// Add difficulty settings gear to the inputContainer
-function Guessbox({ allCharacterData, history, onGuess, difficultyLevels, resetFunc}: GuessBoxProps) {
-  
-  function handleResetClick() {
-    
-    const filteredData = new Map(
-      [...allCharacterData.entries()].filter(
-        ([_, values]) => values[11] !== undefined && difficultyLevels.includes(Number(values[11]))
-      )
-    );
-  
-    const keys = Array.from(filteredData.keys());
+
+
+function GuessBox({ allCharacterData, history, onGuess, difficultyLevels, resetFunc }: GuessBoxProps) {
+  const [settings, setSettings] = useState({
+    difficultyCheckbox1: difficultyLevels.includes(1),
+    difficultyCheckbox2: difficultyLevels.includes(2),
+    difficultyCheckbox3: difficultyLevels.includes(3),
+  });
+
+  const handleSettingsChange = (updatedSettings: typeof settings) => {
+    console.log("Updated settings in GuessBox:", updatedSettings);
+    setSettings(updatedSettings);
+  };
+
+  const getFilteredCharacterKeys = (enabledLevels: number[]): string[] => {
+    return Array.from(allCharacterData.entries())
+      .filter(([_, values]) => values[11] !== undefined && enabledLevels.includes(Number(values[11])))
+      .map(([key]) => key);
+  };
+
+  const getRandomCharacterKey = (keys: string[]): string => {
     const randomIndex = Math.floor(Math.random() * keys.length);
-    const todaysAnswer: string = keys[randomIndex];
-    console.log(todaysAnswer);
-    resetFunc(todaysAnswer); // Call reset when needed
-  }
+    return keys[randomIndex];
+  };
+
+  const handleResetClick = () => {
+    const enabledLevels = Object.entries(settings)
+      .filter(([key, value]) => value)
+      .map(([key]) => Number(key.replace("difficultyCheckbox", "")));
+    
+    if (enabledLevels.length === 0) {
+      alert("Please select at least one difficulty level before resetting the game.");
+      return;
+    }
+
+    const filteredKeys = getFilteredCharacterKeys(enabledLevels);
+    if (filteredKeys.length > 0) {
+      const todaysAnswer = getRandomCharacterKey(filteredKeys);
+      console.log(todaysAnswer);
+      resetFunc(todaysAnswer, enabledLevels);
+    }
+  };
 
   return (
     <div className="guessbox flex justify-center w-full my-4">
-      <InputContainer allCharacterData={allCharacterData} history={history} onGuess={onGuess}></InputContainer>
-      <button 
-        onClick={handleResetClick} 
-        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200 shadow-md">
+      <InputContainer allCharacterData={allCharacterData} history={history} onGuess={onGuess} />
+      <button
+        onClick={handleResetClick}
+        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200 shadow-md"
+      >
         Reset Game
       </button>
-      <SettingsGear></SettingsGear>
-
+      <SettingsGear settings={settings} onSettingsChange={handleSettingsChange} />
     </div>
-  )
+  );
 }
+
+
+
+// // Add difficulty settings gear to the inputContainer
+// function Guessbox({ allCharacterData, history, onGuess, difficultyLevels, resetFunc}: GuessBoxProps) {
+
+//   function handleResetClick() {
+
+//     const filteredData = new Map(
+//       [...allCharacterData.entries()].filter(
+//         ([_, values]) => values[11] !== undefined && difficultyLevels.includes(Number(values[11]))
+//       )
+//     );
+
+//     const keys = Array.from(filteredData.keys());
+//     const randomIndex = Math.floor(Math.random() * keys.length);
+//     const todaysAnswer: string = keys[randomIndex];
+//     console.log(todaysAnswer);
+//     resetFunc(todaysAnswer); // Call reset when needed
+//   }
+
+//   return (
+//     <div className="guessbox flex justify-center w-full my-4">
+//       <InputContainer allCharacterData={allCharacterData} history={history} onGuess={onGuess}></InputContainer>
+//       <button 
+//         onClick={handleResetClick} 
+//         className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200 shadow-md">
+//         Reset Game
+//       </button>
+//       <SettingsGear></SettingsGear>
+
+//     </div>
+//   )
+// }
 
 function Guesses({ allCharacterData, history, todaysAnswer }: GuessesProps) {
 
@@ -242,7 +303,7 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
             scalarStyling = "bg-green-500 display:inline-block"
             break;
         }
-        if(name === "Introduced") {
+        if (name === "Introduced") {
           return <div className={generic_styling + scalarStyling}>
             <span>{"Vol. " + content}</span>
           </div>
@@ -251,7 +312,7 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
             <span>{content}</span>
           </div>
         }
-        
+
       case "Binary":
         let binaryStyling = "";
         switch (response) {
