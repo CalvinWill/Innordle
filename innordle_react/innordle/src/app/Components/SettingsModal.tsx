@@ -55,7 +55,7 @@ export default function SettingsModal({ onClose, initialSettings, onSettingsChan
     };
 
     return (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
             <div className="relative bg-white p-6 rounded-lg shadow-lg w-80">
                 <button
                     onClick={onClose}
@@ -76,7 +76,7 @@ export default function SettingsModal({ onClose, initialSettings, onSettingsChan
                         className={`flex-1 p-2 ${activeTab === "difficulties" ? "border-b-2 border-blue-500 font-bold" : "text-gray-500"}`}
                         onClick={() => setActiveTab("difficulties")}
                     >
-                        Included Difficulties
+                        Difficulty Settings
                     </button>
                 </div>
 

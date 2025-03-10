@@ -215,7 +215,9 @@ function Guesses({ allCharacterData, history, todaysAnswer }: GuessesProps) {
 
   return (
     <div className="guesses-container flex flex-col justify-center">
-      <div className="category-bar grid grid-cols-11 mb-4 flex">
+      <div className="category-bar grid grid-cols-11 mb-4 flex"
+            style={{ gridTemplateColumns: `repeat(${DISPLAYED_CATEGORIES.length}, minmax(0, 1fr))` }}
+      >
         {DISPLAYED_CATEGORIES.map((category, index) => (
           <div key={index} className="w-24 h-12 category-title border-0">
             <div className=" justify-center flex text-white">
@@ -256,7 +258,10 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
 
   // Dynamically populate the guess row with the correct response according to given guess
   return (
-    <div className="guess grid grid-cols-11 gap-2 rounded-lg w-full mb-4 text-white">
+    <div
+  className="guess grid gap-2 rounded-lg w-full mb-4 text-white"
+  style={{ gridTemplateColumns: `repeat(${DISPLAYED_CATEGORIES.length}, minmax(0, 1fr))` }}
+>
       {
         DISPLAYED_CATEGORIES.map((category, index) => {
           let responseDetail = allResponses.get(category);
