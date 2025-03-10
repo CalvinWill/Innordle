@@ -1,7 +1,7 @@
 import { Underdog } from "next/font/google"
 import InputContainer from "./Input"
 import SettingsGear from "./SettingsGear"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 
 //// Interfaces for Guesses Components
@@ -20,6 +20,8 @@ interface GuessBoxProps {
   onGuess: (guess: string) => void,
   difficultyLevels: number[],
   resetFunc: (newAnswer?: string, newDifficulties?: number[]) => void;
+  toggleCategoryFunc: (category: string) => void
+  displayedCategories: string[]
 }
 
 interface GuessesProps {
@@ -53,7 +55,21 @@ const CATEGORIES = [
   "Introduced"
 ]
 
-const DISPLAYED_CATEGORIES = [
+const CATEGORY_ORDER = [
+  "Image",
+  "Mentions",
+  "Introduced",
+  "Gender",
+  "Species",
+  "Status",
+  "Affiliation",
+  "Continent",
+  "Residence",
+  "Occupation",
+  "Fighting Type"
+]
+
+let DISPLAYED_CATEGORIES = [
   "Image",
   "Mentions",
   "Introduced",
@@ -100,10 +116,36 @@ const DEBUGGING = true;
 //// Begin component declaration
 export default function GuessContainer({ allCharacterData, history, onGuess, todaysAnswer, finished, difficulties, onReset }: GuessContainerProps) {
 
+  const [displayedCategories, setDisplayedCategories] = useState([...DISPLAYED_CATEGORIES]);
+
+  const toggleCategory = (category: string) => {
+    let updatedCategories;
+    
+    if (displayedCategories.includes(category)) {
+      // Remove the category
+      updatedCategories = displayedCategories.filter((c) => c !== category);
+    } else {
+      // Add it back while maintaining order
+      updatedCategories = [...displayedCategories, category].sort(
+        (a, b) => CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b)
+      );
+    }
+
+    // Update both global and local states
+    DISPLAYED_CATEGORIES = updatedCategories;
+    setDisplayedCategories(updatedCategories);
+  };
+
+  // Sync with global variable when it changes elsewhere
+  useEffect(() => {
+    setDisplayedCategories([...DISPLAYED_CATEGORIES]);
+  }, [DISPLAYED_CATEGORIES]);
+
+
+
   return (
     <div className="guess-container flex flex-col items-center justify-center w-full">
-
-      <GuessBox allCharacterData={allCharacterData} history={history} onGuess={onGuess} difficultyLevels={difficulties} resetFunc={onReset}></GuessBox>
+      <GuessBox allCharacterData={allCharacterData} history={history} onGuess={onGuess} difficultyLevels={difficulties} resetFunc={onReset} toggleCategoryFunc={toggleCategory} displayedCategories={displayedCategories}></GuessBox>
       <Guesses allCharacterData={allCharacterData} history={history} todaysAnswer={todaysAnswer}></Guesses>
     </div>
   )
@@ -111,7 +153,7 @@ export default function GuessContainer({ allCharacterData, history, onGuess, tod
 
 
 
-function GuessBox({ allCharacterData, history, onGuess, difficultyLevels, resetFunc }: GuessBoxProps) {
+function GuessBox({ allCharacterData, history, onGuess, difficultyLevels, resetFunc, toggleCategoryFunc, displayedCategories }: GuessBoxProps) {
   const [settings, setSettings] = useState({
     difficultyCheckbox1: difficultyLevels.includes(1),
     difficultyCheckbox2: difficultyLevels.includes(2),
@@ -123,47 +165,16 @@ function GuessBox({ allCharacterData, history, onGuess, difficultyLevels, resetF
     setSettings(updatedSettings);
   };
 
-  const getFilteredCharacterKeys = (enabledLevels: number[]): string[] => {
-    return Array.from(allCharacterData.entries())
-      .filter(([_, values]) => values[11] !== undefined && enabledLevels.includes(Number(values[11])))
-      .map(([key]) => key);
-  };
-
-  const getRandomCharacterKey = (keys: string[]): string => {
-    const randomIndex = Math.floor(Math.random() * keys.length);
-    return keys[randomIndex];
-  };
-
-  const handleResetClick = () => {
-    const enabledLevels = Object.entries(settings)
-      .filter(([key, value]) => value)
-      .map(([key]) => Number(key.replace("difficultyCheckbox", "")));
-    
-    if (enabledLevels.length === 0) {
-      alert("Please select at least one difficulty level before resetting the game.");
-      return;
-    }
-
-    const filteredKeys = getFilteredCharacterKeys(enabledLevels);
-    if (filteredKeys.length > 0) {
-      const todaysAnswer = getRandomCharacterKey(filteredKeys);
-      console.log(todaysAnswer);
-      resetFunc(todaysAnswer, enabledLevels);
-    }
-  };
-
+  
   return (
-    <div className="guessbox flex justify-center w-full my-4">
+    <div className="guessbox relative flex justify-center w-2/3 my-4">
       <InputContainer allCharacterData={allCharacterData} history={history} onGuess={onGuess} />
-      <button
-        onClick={handleResetClick}
-        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200 shadow-md"
-      >
-        Reset Game
-      </button>
-      <SettingsGear settings={settings} onSettingsChange={handleSettingsChange} />
+      
+      <div className="absolute top-0 right-0">
+        <SettingsGear settings={settings} onSettingsChange={handleSettingsChange} resetFunction={resetFunc} charData={allCharacterData} toggleCategoryFunc={toggleCategoryFunc} displayedCategories={displayedCategories}/>
+      </div>
     </div>
-  );
+);
 }
 
 
@@ -356,7 +367,7 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
             categoryStyling += " text-[12px]"
             break;
           case 4:
-            categoryStyling += " text-[14px]"
+            categoryStyling += " text-[13px]"
             break;
           case 3:
             categoryStyling += " text-[14px]"

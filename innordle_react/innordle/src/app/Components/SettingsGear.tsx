@@ -13,9 +13,14 @@ interface SettingsGearProps {
         difficultyCheckbox2: boolean;
         difficultyCheckbox3: boolean;
     }) => void;
+    resetFunction: (newAnswer?: string, newDifficulties?: number[]) => void; // Accept reset function
+    charData: Map<string, string[]>;
+    toggleCategoryFunc: (category: string) => void;
+    displayedCategories: string[];
+
 }
 
-export default function SettingsGear({ settings, onSettingsChange }: SettingsGearProps) {
+export default function SettingsGear({ settings, onSettingsChange, resetFunction, charData, toggleCategoryFunc, displayedCategories }: SettingsGearProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -32,6 +37,10 @@ export default function SettingsGear({ settings, onSettingsChange }: SettingsGea
                     onClose={() => setIsOpen(false)}
                     initialSettings={settings} // ✅ Pass down the latest settings
                     onSettingsChange={onSettingsChange} // ✅ Pass the handler up to App
+                    resetFunction={resetFunction}
+                    allCharacterData={charData}
+                    toggleCategoryFunc={toggleCategoryFunc}
+                    displayedCategories={displayedCategories}
                 />
             )}
         </>
