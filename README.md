@@ -9,10 +9,10 @@ npm run dev
 ## TODO:
 ### Functionality (Listed in order of importance):
 
--Hide Categories (In modal, edit diplay-category)
 -Include nicknames (Shouldn't be terrible)
 -Add daily character option (Hash of number of characters diff 1-3? 1-4?)
 -Add initial rules popup (This can be where daily goes. Or that's always the first.)
+-Make blanks unknown
 
 - Add some way to apply settings before starting game
 
