@@ -54,6 +54,7 @@ Longshot. Shoot for the stars!
 
 ### Appearance (Listed in order of importance):
 - Do something about the profile pictures
+- Add animations for when the guess details appear
 - Add victory screen
 - Add tooltips on hover
 - Create transparent textures for behind squares
@@ -64,11 +65,8 @@ Longshot. Shoot for the stars!
 - Style scrollbars to be more immersive
 
 ### Low Hanging Fruit:
-- Make tiles with no info (blanks) return "Unknown"
 - Maybe add background to arrows
 - Add favicon (We have no created favicon yet tho)
-- Fix hover-over appearing above search bar results
 - Add arrow keys to switch between search bar results
-- Remove please fill out this field alt text hover input bar
-- Purge the nines (keep the tens)
 - Add a give up button
+- Fix the category titles shifting a little once a guess is made (Maybe hide it until history.length > 0)

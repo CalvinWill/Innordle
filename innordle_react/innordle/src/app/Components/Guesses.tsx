@@ -145,7 +145,16 @@ export default function GuessContainer({ allCharacterData, history, onGuess, tod
 
   return (
     <div className="guess-container flex flex-col items-center justify-center w-full">
-      <GuessBox allCharacterData={allCharacterData} history={history} onGuess={onGuess} difficultyLevels={difficulties} resetFunc={onReset} toggleCategoryFunc={toggleCategory} displayedCategories={displayedCategories}></GuessBox>
+      <GuessBox 
+          allCharacterData={allCharacterData} 
+          history={history} 
+          onGuess={onGuess} 
+          difficultyLevels={difficulties} 
+          resetFunc={onReset} 
+          toggleCategoryFunc={toggleCategory} 
+          displayedCategories={displayedCategories}>
+      </GuessBox>
+
       <Guesses allCharacterData={allCharacterData} history={history} todaysAnswer={todaysAnswer}></Guesses>
     </div>
   )
@@ -294,11 +303,15 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
   function GuessDetail({ guess, type, response, content, name }: { guess: string, type: string, response: string, content: string, name: string }) {
     // Determine what css to apply and how to apply content depending on the given 
     const generic_styling = "hover:brightness-90 flex items-center justify-center text-center border border-gray-600 rounded w-24 h-24 "
+    if (content === "") {
+      content = "Unknown";
+    }
+
     switch (type) {
       case "Image":
-        if (content === "") {
+        if (content === "Unknown") {
           return (
-            <div className={generic_styling}>
+            <div className={`${generic_styling} bg-white text-black font-bold`}>
               {guess}
             </div>
           );
@@ -312,6 +325,7 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
             </div>
           );
         }
+
       case "Scalar":
         let scalarStyling = "";
         switch (response) {
@@ -327,12 +341,12 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
         }
         if (name === "Introduced") {
           return <div className={generic_styling + scalarStyling}>
-            <span>{"Vol. " + content}</span>
-          </div>
+                   <span>{"Vol. " + content}</span>
+                 </div>
         } else {
           return <div className={generic_styling + scalarStyling}>
-            <span>{content}</span>
-          </div>
+                   <span>{content}</span>
+                 </div>
         }
 
       case "Binary":
@@ -346,8 +360,9 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
             break;
         }
         return <div className={generic_styling + binaryStyling}>
-          <span>{content}</span>
-        </div>
+                 <span>{content}</span>
+               </div>
+
       case "Category":
         let categoryStyling = "";
         switch (response) {
@@ -386,11 +401,13 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
 
         }
         return <div className={generic_styling + categoryStyling}>
-          <span>{content}</span>
-        </div>
+                  <span>{content}</span>
+               </div>
     }
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////
   //// Helper functions
   /**
@@ -413,6 +430,8 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
     // Call function on details of guess and todays answer to create the response
     return compareDetails({ guessMap, answerMap });
   }
+
+
 
   /**
    * Creates a map of {category : detailsArray} for the specified character
@@ -445,6 +464,7 @@ function Guess({ todaysAnswer, allCharacterData, guess }: GuessProps) {
 }
 
 
+
 /**
  * Used to help clean up CSV data and turn it into an array of strings
  * @param row, a string representing a category from the CSV looking like "Erin Solstice | Sky | etc..."
@@ -465,6 +485,8 @@ function parseCategory(categoryString: String): string[] {
 
   return ans;
 }
+
+
 
 /**
  * Takes the details of two characters and compares them, then sends the appropriate response
@@ -488,8 +510,9 @@ function parseCategory(categoryString: String): string[] {
 function compareDetails({ guessMap, answerMap }:
   { guessMap: Map<string, string[]>, answerMap: Map<string, string[]> }
 ): Map<string, string> {
-
+  // Create the response that we will be returning back up
   let response: Map<string, string> = new Map<string, string>
+
   // Fill out the response according to the categories we have to display
   DISPLAYED_CATEGORIES.forEach((category) => {
     const guessDetail = guessMap.get(category);
@@ -513,6 +536,7 @@ function compareDetails({ guessMap, answerMap }:
       case "Image":
         response.set(category, guessDetail[0]);
         break;
+
       // Respond with whether the detail is larger, smaller, or equal
       case "Scalar":
         let scalarAns: string = "";
@@ -529,12 +553,14 @@ function compareDetails({ guessMap, answerMap }:
         }
         response.set(category, scalarAns);
         break;
+
       // Respond with whether the detail is correct or not
       case "Binary":
         let binaryAns: string = guessDetail[0] === answerDetail[0] ? "Correct" : "Incorrect";
 
         response.set(category, binaryAns)
         break;
+        
       // Respond with whether there are some entries that overlap or not
       case "Category":
         let categoryAns: string = ""

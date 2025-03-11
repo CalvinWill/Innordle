@@ -35,8 +35,8 @@ export default function SettingsGear({ settings, onSettingsChange, resetFunction
             {isOpen && (
                 <SettingsModal
                     onClose={() => setIsOpen(false)}
-                    initialSettings={settings} // ✅ Pass down the latest settings
-                    onSettingsChange={onSettingsChange} // ✅ Pass the handler up to App
+                    initialSettings={settings}
+                    onSettingsChange={onSettingsChange}
                     resetFunction={resetFunction}
                     allCharacterData={charData}
                     toggleCategoryFunc={toggleCategoryFunc}

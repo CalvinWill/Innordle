@@ -45,11 +45,7 @@ export default function Home() {
   const keys = Array.from(filteredData.keys());
   const randomIndex = Math.floor(Math.random() * keys.length);
   const todaysAnswer: string = keys[randomIndex];
-  //const todaysAnswer: string = "Rhaldon"
-
-  console.log(todaysAnswer);
-  console.log(todaysAnswer);
-  console.log(todaysAnswer);
+  // const todaysAnswer: string = "Theillige"
 
   if (DEBUGGING) {  
     const todaysAnswerDetails: string[] | undefined = allCharacterData.get(todaysAnswer);

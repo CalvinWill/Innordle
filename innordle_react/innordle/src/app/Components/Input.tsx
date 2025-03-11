@@ -31,7 +31,6 @@ function InputBar({allCharacterData, history, onGuess} : InputContainerProps) {
             const aStarts = a.toLowerCase().startsWith(lowerInput);
             const bStarts = b.toLowerCase().startsWith(lowerInput);
 
-
             if (aStarts && !bStarts) return -1;
             if (!aStarts && bStarts) return 1;
 
@@ -60,7 +59,6 @@ function InputBar({allCharacterData, history, onGuess} : InputContainerProps) {
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         // User wants to submit a guess
-        
         if (event.key === "Enter") {
             // Submit first matching option
             if (input !== "" && options.length > 0) {
@@ -88,14 +86,13 @@ function InputBar({allCharacterData, history, onGuess} : InputContainerProps) {
             onKeyDown={(e) => handleKeyDown(e)}
             type="text"
             placeholder = "Guess the character here!"
-            spellCheck="true"
-            required
+            autoComplete="off"
         />
-
+        
         {showDropdown && (
             <ul 
-                className="absolute left-0 right-0 mt-1 overflow-y-auto bg-gray-800 shadow-md max-h-48 rounded-md"
-                style={{ maxHeight: "200px" }}>
+                className="absolute left-0 right-0 mt-1 overflow-y-auto bg-gray-800 shadow-md max-h-48 rounded-md max-h-50 "
+                style={{zIndex : "1"}}> {/* I don't know why, but tailwind z-1 doesn't work */}
                 {options.map((option, index) => (
                     <li
                     key={index}
