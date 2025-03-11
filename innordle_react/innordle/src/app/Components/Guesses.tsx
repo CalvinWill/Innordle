@@ -171,7 +171,13 @@ function GuessBox({ allCharacterData, history, onGuess, difficultyLevels, resetF
       <InputContainer allCharacterData={allCharacterData} history={history} onGuess={onGuess} />
       
       <div className="absolute top-0 right-0">
-        <SettingsGear settings={settings} onSettingsChange={handleSettingsChange} resetFunction={resetFunc} charData={allCharacterData} toggleCategoryFunc={toggleCategoryFunc} displayedCategories={displayedCategories}/>
+        <SettingsGear 
+            settings={settings} 
+            onSettingsChange={handleSettingsChange} 
+            resetFunction={resetFunc} 
+            charData={allCharacterData} 
+            toggleCategoryFunc={toggleCategoryFunc} 
+            displayedCategories={displayedCategories}/>
       </div>
     </div>
 );

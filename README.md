@@ -1,18 +1,27 @@
 # Innordle
 
+![alt text](./innordle_react/innordle/WanderingInndle.png)
+
+## How to Run Locally
 Currently only supports running in development mode. No packages or dependencies besides React and
 Node.js required, to run, use:
 ```
 npm run dev
 ```
 
-## TODO:
+## Things Left to Implement:
 ### Functionality (Listed in order of importance):
 
--Include nicknames (Shouldn't be terrible)
--Add daily character option (Hash of number of characters diff 1-3? 1-4?)
--Add initial rules popup (This can be where daily goes. Or that's always the first.)
--Make blanks unknown
+- Include nicknames (Shouldn't be terrible)
+
+- Add initial rules popup (This can be where daily goes. Or that's always the first.)
+
+- Add daily character option (Hash of number of characters diff 1-3? 1-4?)
+
+The idea is to have an option select between what we have now (infinite random) or a daily mode,
+but the daily mode is all done locally - we hash the current date to a number (this gives uniform 
+odds across all numbers in long?) and then mod it by the amount of characters in the 1-3 difficulty
+range. Thus, changing with their clock date, a new character will appear to be guessed every day. 
 
 - Add some way to apply settings before starting game
 
@@ -44,7 +53,6 @@ Duuuuuuuh
 Longshot. Shoot for the stars!
 
 ### Appearance (Listed in order of importance):
-- Add background to arrows
 - Do something about the profile pictures
 - Add victory screen
 - Add tooltips on hover
@@ -55,3 +63,12 @@ Longshot. Shoot for the stars!
 - Create stylized shading for background image 
 - Style scrollbars to be more immersive
 
+### Low Hanging Fruit:
+- Make tiles with no info (blanks) return "Unknown"
+- Maybe add background to arrows
+- Add favicon (We have no created favicon yet tho)
+- Fix hover-over appearing above search bar results
+- Add arrow keys to switch between search bar results
+- Remove please fill out this field alt text hover input bar
+- Purge the nines (keep the tens)
+- Add a give up button
