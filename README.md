@@ -23,10 +23,13 @@ but the daily mode is all done locally - we hash the current date to a number (t
 odds across all numbers in long?) and then mod it by the amount of characters in the 1-3 difficulty
 range. Thus, changing with their clock date, a new character will appear to be guessed every day. 
 
-- Add some way to apply settings before starting game
+- Make settings modal a consistent size across tabs
+
+- Add some way to apply settings before starting game 
 
 Includes Difficulty, and could also include which columns to include
 Difficulty can be a strict include 
+    CComment: They can just reset I think this one is optional
 
 - Add options to change guessed characters
 
