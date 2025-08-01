@@ -59,7 +59,7 @@ const CATEGORY_ORDER = [
 ]
 
 let DISPLAYED_CATEGORIES = [
-  "Image", "Mentions", "Introduced", "Gender", "Species", "Status", "Affiliation", "Continent", "Residence", "Occupation", "Fighting Type"
+  "Name", "Mentions", "Introduced", "Gender", "Species", "Status", "Affiliation", "Continent", "Residence", "Occupation", "Fighting Type"
 ]
 
 // const CATEGORY_TO_TYPE = {
