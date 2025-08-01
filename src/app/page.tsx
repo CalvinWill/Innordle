@@ -1,13 +1,9 @@
-import Image from "next/image"; 
-import Game from "./Components/Game";
 import { parse } from "csv-parse/sync"
 import * as fs from 'fs'
-import background_img from '../app/innordle_background.jpg'
 import GameWrapper from "./Components/GameWrapper";
 
 
 const INPUT_PATH = './data/character_data.csv'
-const DEBUGGING = false;
 
 /**
  * Performs data loading outside of rendering the game so it only happens once.
@@ -26,40 +22,13 @@ export default function Home() {
   }
 
   // Organize and store data for use later
-  let allCharacterData: Map<string, string[]> = new Map<string, string[]>()
+  const allCharacterData: Map<string, string[]> = new Map<string, string[]>()
 
 
   for (let i = 0; i < tempData.length; i++) {
-    let row: string[] = tempData[i];
+    const row: string[] = tempData[i];
     allCharacterData.set(row[0], row.slice(1));
   }
-
-  const difficulties: number[] = [1, 2, 3];
-
-  const filteredData = new Map(
-    [...allCharacterData.entries()].filter(
-      ([_, values]) => values[11] !== undefined && difficulties.includes(Number(values[11]))
-    )
-  );
-
-  const keys = Array.from(filteredData.keys());
-  const randomIndex = Math.floor(Math.random() * keys.length);
-  const todaysAnswer: string = keys[randomIndex];
-  // const todaysAnswer: string = "Theillige"
-
-  if (DEBUGGING) {  
-    const todaysAnswerDetails: string[] | undefined = allCharacterData.get(todaysAnswer);
-    if (todaysAnswerDetails === undefined) {
-      console.log('Selected character does not have info')
-    }
-    else {
-      console.log(todaysAnswerDetails);
-      console.log(`Today's Answer: ${todaysAnswer}`);
-      console.log(`Today's Answer Aliases: ${todaysAnswerDetails[0].split(" |")}`);
-      console.log(`Today's Answer Fighting Type: ${todaysAnswerDetails[todaysAnswerDetails.length-1].split(" |")}`);
-    }
-  }
-
 
   return <div className="background bg-cover bg-center flex justify-center"
               style={{
@@ -70,9 +39,7 @@ export default function Home() {
               }}> 
               <div className="game-container overflow-y-scroll w-full h-full">
                 <GameWrapper 
-                    initialAnswer={todaysAnswer} 
-                    allCharacterData={allCharacterData} 
-                    initialDifficulties={difficulties}>
+                    allCharacterData={allCharacterData}>
                 </GameWrapper>
                 {/* <Game todaysAnswer={todaysAnswer} allCharacterData={allCharacterData} initialDifficulties={difficulties}></Game> */}
               </div>
