@@ -45,8 +45,7 @@ interface GuessesProps {
 interface GuessProps {
   allCharacterData: Map<string, string[]>,
   guess: string,
-  todaysAnswer: string,
-  isLatest?: boolean
+  todaysAnswer: string
 }
 
 //// Declaring useful constants
@@ -89,7 +88,7 @@ categoryTypeMap.set("Residence", "Category");
 categoryTypeMap.set("Occupation", "Category");
 categoryTypeMap.set("Fighting Type", "Category");
 
-const DEBUGGING = true;
+// const DEBUGGING = true;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// Begin component declaration
@@ -148,7 +147,7 @@ function GuessBox({ allCharacterData, history, todaysAnswer, onGuess, difficulty
   });
 
   const handleSettingsChange = (updatedSettings: typeof settings) => {
-    console.log("Updated settings in GuessBox:", updatedSettings);
+    // console.log("Updated settings in GuessBox:", updatedSettings);
     setSettings(updatedSettings);
   };
 
@@ -248,10 +247,66 @@ function Guesses({ allCharacterData, history, todaysAnswer }: GuessesProps) {
   )
 }
 
-function Guess({ todaysAnswer, allCharacterData, guess, isLatest }: GuessProps) {
+export type CellPlan = CellResponse & {
+  guess: string,
+  content: string,
+  /** Name of the category */
+  name: string,
+  /** Index in the list */
+  index: number,
+}
+
+export type CellResponse = {
+  type: "Image",
+  /** Image of the guessed person */
+  response: string
+} | {
+  type: "Scalar",
+  response: "High" | "Low" | "Correct"
+} | {
+  type: "Binary",
+  response: "Correct" | "Incorrect"
+} | {
+  type: "Category",
+  response: "None" | "Match" | "Partial"
+}
+
+export function planRow({todaysAnswer, allCharacterData, guess}: GuessProps): CellPlan[] {
   // Call function to determine types in GuessDetail
   const allResponses: Map<string, string> = determineResponse({ todaysAnswer, guess, allCharacterData });
   const guessDetailsMap = getCharacterDetailsMap(guess, allCharacterData);
+
+  return DISPLAYED_CATEGORIES.map((category, index) => {
+    const responseDetail = allResponses.get(category);
+    let type: string;
+    let content: string;
+    let response: string;
+
+    if (responseDetail === undefined) {
+      type = "ERROR"
+      content = "ERROR"
+      response = "Error"
+    } else {
+      type = categoryTypeMap.get(category)!; // sin of exclamation mark!!
+      response = responseDetail!;
+      content = guessDetailsMap.get(category)!.join(", "); // sin of exclamation mark!!
+    }
+
+    // Trusting `compareDetails` to satisfy this type
+    const tr = {type, response} as CellResponse;
+
+    return {
+      guess,
+      ...tr,
+      content,
+      index,
+      name: category
+    };
+  })
+}
+
+function Guess(props: GuessProps & { isLatest: boolean }) {
+  const rowPlan = planRow(props);
 
   // Dynamically populate the guess row with the correct response according to given guess
   return (
@@ -260,48 +315,20 @@ function Guess({ todaysAnswer, allCharacterData, guess, isLatest }: GuessProps) 
       style={{ gridTemplateColumns: `repeat(${DISPLAYED_CATEGORIES.length}, minmax(0, 1fr))` }}
     >
       {
-        DISPLAYED_CATEGORIES.map((category, index) => {
-          const responseDetail = allResponses.get(category);
-          let type: string;
-          let content: string;
-          let response: string;
-
-          if (responseDetail === undefined) {
-            type = "ERROR"
-            content = "ERROR"
-            response = "Error"
-          } else {
-            type = categoryTypeMap.get(category)!; // sin of exclamation mark!!
-            response = responseDetail!;
-            content = guessDetailsMap.get(category)!.join(", "); // sin of exclamation mark!!
-          }
-
+        rowPlan.map((cellPlan, index) => {
           return (
             <GuessDetail
-              guess={guess}
-              type={type}
-              content={content}
-              response={response}
+              {...cellPlan}
               key={index}
-              name={category}
-              isLatest={isLatest}
-              index={index}
-            ></GuessDetail>
+              isLatest={props.isLatest}
+            />
           )
         })
       }
     </div>
   )
 
-  function GuessDetail({ guess, type, response, content, name, isLatest, index }: {
-    guess: string,
-    type: string,
-    response: string,
-    content: string,
-    name: string,
-    isLatest?: boolean,
-    index: number
-  }) {
+  function GuessDetail({ guess, type, response, content, name, isLatest, index }: CellPlan & { isLatest?: boolean }) {
     // Add animation styles with delay based on index
     const animationDelay = `${index * 220}ms`;
     const animationStyle = isLatest ? { animationDelay } : {};
@@ -454,7 +481,7 @@ function getCharacterDetailsMap(characterName: string, allCharacterData: Map<str
   // Get guess details for the given character and confirm that it exists
   const characterDetails: string[] | undefined = allCharacterData.get(characterName);
   if (characterDetails === undefined) {
-    console.log(`Could not find details for ${characterName}`)
+    // console.log(`Could not find details for ${characterName}`)
     throw new Error(`Could not find details for ${characterName}`)
   }
 
@@ -464,9 +491,9 @@ function getCharacterDetailsMap(characterName: string, allCharacterData: Map<str
 
   // i starts at 1 because CATEGORIES includes id but guessDetails does not
   for (let i = 1; i < CATEGORIES.length; i++) {
-    if (DEBUGGING) {
-      console.log(`CATEGORIES[i]: ${CATEGORIES[i]}, characterDetails: ${characterDetails[i - 1]}`)
-    }
+    // if (DEBUGGING) {
+    //   console.log(`CATEGORIES[i]: ${CATEGORIES[i]}, characterDetails: ${characterDetails[i - 1]}`)
+    // }
     characterDetailsMap.set(CATEGORIES[i], parseCategory(characterDetails[i - 1]))
   }
 
@@ -519,17 +546,17 @@ function compareDetails({ guessMap, answerMap }: { guessMap: Map<string, string[
     const guessDetail = guessMap.get(category);
     const answerDetail = answerMap.get(category);
 
-    if (DEBUGGING) {
-      console.log(`Comparing Guess (${guessDetail}) and Answer (${answerDetail})`)
-    }
+    // if (DEBUGGING) {
+    //   console.log(`Comparing Guess (${guessDetail}) and Answer (${answerDetail})`)
+    // }
 
     // Ensure map has elements we want in it (this is mainly for typescript)
     if (guessDetail === undefined) {
-      console.log(`Could not find details for ${category}`)
+      // console.log(`Could not find details for ${category}`)
       throw new Error(`Could not find details for ${category}`)
     }
     if (answerDetail === undefined) {
-      console.log(`Could not find details for ${category}`)
+      // console.log(`Could not find details for ${category}`)
       throw new Error(`Could not find details for ${category}`)
     }
 
@@ -562,7 +589,7 @@ function compareDetails({ guessMap, answerMap }: { guessMap: Map<string, string[
         const guessSet = new Set(guessDetail);
         const answerSet = new Set(answerDetail);
         const elementsInCommon: number = guessSet.intersection(answerSet).size;
-        console.log(elementsInCommon)
+        // console.log(elementsInCommon)
         if (elementsInCommon === 0) {
           categoryAns = "None"
         } else if (elementsInCommon === answerSet.size && elementsInCommon === guessSet.size) {

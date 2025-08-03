@@ -1,78 +1,32 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import GuessContainer from "./Guesses";
 import WinScreen from "./WinScreen";
 import background_img from "../twi-logo-fancy.png";
 import buttonImage from "../infoButton.png";
 import { createHash } from 'crypto';
 
+export type ResetFunc = (newAnswer?: string, newDifficulties?: number[], newShowModal?: boolean, maxVolume?: number, dayNumber?: number) => void
+
 interface GameProps {
   todaysAnswer: string;
   allCharacterData: Map<string, string[]>;
   initialDifficulties: number[];
-  onReset: (newAnswer?: string, newDifficulties?: number[], newShowModal?: boolean, maxVolume?: number) => void;
+  onReset: ResetFunc;
   showModal: boolean;
   maxVolume: number;
   isDaily: boolean;
   setIsDaily: (state: boolean) => void;
+  dayNumber: number;
 }
 
 interface ModalProps {
   onClose: () => void;
-  resetFunc: (newAnswer?: string, newDifficulties?: number[], newShowModal?: boolean, maxVolume?: number) => void;
-  setDaily: (state: boolean) => void;
+  resetFunc: ResetFunc;
+  setDaily: (state: boolean) => void
   settingsModalFunc: (page: number) => void;
   allCharacterData: Map<string, string[]>;
-}
-
-// Konami Code Modal (Info)
-function InfoModal({ onClose }: { onClose: () => void }) {
-  const konamiCode = useRef([
-    "ArrowUp", "ArrowUp",
-    "ArrowDown", "ArrowDown",
-    "ArrowLeft", "ArrowRight",
-    "ArrowLeft", "ArrowRight",
-    "b", "a", "Enter"
-  ]);
-  const inputBuffer = useRef<string[]>([]);
-
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      inputBuffer.current.push(e.key);
-      if (inputBuffer.current.length > konamiCode.current.length) {
-        inputBuffer.current.shift();
-      }
-
-      if (inputBuffer.current.join("") === konamiCode.current.join("")) {
-        alert("🎉 Konami Code activated!");
-        // Insert easter egg behavior here!
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-2xl shadow-lg max-w-md w-full text-left relative">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-700 hover:text-black bg-transparent p-2 text-2xl"
-        >
-          &times;
-        </button>
-        <h2 className="text-xl font-bold mb-4">About</h2>
-        <p className="text-gray-700 text-sm leading-relaxed">
-          Inndle is a daily character-guessing game featuring characters from the web serial The Wandering Inn by Pirateaba.
-        </p>
-        <p className="text-gray-700 text-sm leading-relaxed">
-          Created by CalvinWill, SppEric, and samf25 on Github.
-        </p>
-      </div>
-    </div>
-  );
 }
 
 // Helper function for generating the daily character
@@ -82,20 +36,27 @@ function sha256ToBigInt(data: string): bigint {
 }
 
 function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterData }: ModalProps) {
+  //// Generate the character for when the player starts playing - both daily and free
+  // Our initial character will only be from difficulties easy, medium, and hard
   const enabledLevels: number[] = [1, 2, 3];
 
+  // Remove characters that are too difficult
   const filteredKeys = Array.from(allCharacterData.entries())
     .filter(([, values]) => values[11] !== undefined && enabledLevels.includes(Number(values[11])))
     .map(([key]) => key);
 
+  // Calculate the free play initial character
   const randomIndex = Math.floor(Math.random() * filteredKeys.length);
   const initialAnswer: string = filteredKeys[randomIndex];
 
+
   const daysToCheck = 14;
   const usedIndexes = new Set<number>();
+  const usedDate = new Date();
 
+  // Get list of indexes from the previous 14 days
   for (let i = 1; i <= daysToCheck; i++) {
-    const pastDate = new Date();
+    const pastDate = new Date(usedDate);
     pastDate.setDate(pastDate.getDate() - i);
     const pastDateStr = pastDate.toISOString().split("T")[0];
     const pastHashInt = sha256ToBigInt(pastDateStr);
@@ -104,7 +65,9 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
     usedIndexes.add(pastIndex);
   }
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  // Compute today's index
+  const todayStr = usedDate.toISOString().split("T")[0];
+  // Handle special hardcoded dates
   const hardcodedAnswers: { [date: string]: string } = {
     "2025-07-31": "Belavierr",
     "2025-08-01": "Garry",
@@ -112,6 +75,15 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
     "2025-08-03": "Foliana",
     "2025-08-04": "Garen",
   };
+
+  // Date without time is automatically UTC.
+  const firstDate = new Date("2025-07-31");
+  const todayDate = new Date(todayStr);
+  const msInDay = 1000 * 60 * 60 * 24;
+  // The firstDate and todayDate are both in UTC, so no rounding should be necessary.
+  let dayNumber = (todayDate.getTime() - firstDate.getTime()) / msInDay + 1;
+  // To be safe, round anyways.
+  dayNumber = Math.round(dayNumber);
 
   let dailyAnswer: string;
 
@@ -129,9 +101,18 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
     dailyAnswer = filteredKeys[index];
   }
 
+  // // Calculate the daily character using our hash
+  // const dateStr = new Date().toISOString().split("T")[0];
+  // const hashInt = sha256ToBigInt(dateStr);
+  // const keysSize = BigInt(filteredKeys.length)
+  // const index = hashInt % keysSize
+  // const dailyAnswer: string = filteredKeys[Number(index)]
+
+  // Now that we have generated the characters we can create our modal
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-2xl shadow-lg max-w-md w-full text-center relative">
+        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-700 hover:text-black bg-transparent p-2 text-2xl"
@@ -139,6 +120,7 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
           &times;
         </button>
 
+        {/* Modal Content */}
         <h2 className="text-2xl font-bold mb-4">Welcome to Inndle!</h2>
 
         <p className="mb-6 text-sm text-gray-700 leading-relaxed">
@@ -152,9 +134,10 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
           </ul>
         </p>
 
+        {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-4">
           <button
-            onClick={() => { resetFunc(dailyAnswer, enabledLevels, false); setDaily(true) }}
+            onClick={() => { resetFunc(dailyAnswer, enabledLevels, false, undefined, dayNumber); setDaily(true) }}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
           >
             Daily Challenge
@@ -173,6 +156,7 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
           >
             Rules
           </button>
+
           <button
             onClick={() => {
               settingsModalFunc(1);
@@ -187,14 +171,17 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
   );
 }
 
-export default function Game({ todaysAnswer, allCharacterData, initialDifficulties, onReset, showModal, maxVolume, isDaily, setIsDaily }: GameProps) {
+export default function Game({ todaysAnswer, allCharacterData, initialDifficulties, onReset, showModal, maxVolume, isDaily, setIsDaily, dayNumber }: GameProps) {
   const [history, setHistory] = useState<string[]>([]);
   const [finished, setFinished] = useState(false);
   const [showTheModal, setShowTheModal] = useState(showModal);
   const [giveUp, setGiveUp] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
+
+
   const [settingsPage, setSettingsPage] = useState(-1);
 
+  // Helper function to pass down to Guesses to update history state
   function handleGuess(guess: string): void {
     const newHistory = [...history];
     newHistory.unshift(guess);
@@ -203,6 +190,29 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
     if (guess === todaysAnswer) {
       setFinished(true);
     }
+  }
+
+  function InfoModal({ onClose }: { onClose: () => void }) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded-2xl shadow-lg max-w-md w-full text-left relative">
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 text-gray-700 hover:text-black bg-transparent p-2 text-2xl"
+          >
+            &times;
+          </button>
+          <h2 className="text-xl font-bold mb-4">About</h2>
+          <p className="text-gray-700 text-sm leading-relaxed">
+            Inndle is a daily character-guessing game featuring characters from the web serial The Wandering Inn by Pirateaba.
+          </p>
+
+          <p className="text-gray-700 text-sm leading-relaxed">
+            Created by CalvinWill, SppEric, and samf25 on Github.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -234,6 +244,7 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
           history={history}
           onFreePlay={onReset}
           daily={isDaily}
+          dayNumber={dayNumber}
           characterData={allCharacterData}
           difficulties={initialDifficulties}
           gaveUp={giveUp}
