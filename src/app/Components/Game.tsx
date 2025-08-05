@@ -53,7 +53,7 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
   const daysToCheck = 14;
   const usedIndexes = new Set<number>();
   const usedDate = new Date();
-  usedDate.setDate(usedDate.getDate() + 1)
+  usedDate.setDate(usedDate.getDate())
 
 
   // Get list of indexes from the previous 14 days
