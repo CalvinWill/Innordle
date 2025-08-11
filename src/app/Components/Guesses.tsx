@@ -463,6 +463,12 @@ function Guess(props: GuessProps & { isLatest: boolean }) {
           case 1:
             fontSize = 15
             break;
+          case 0:
+            fontSize = 15
+            break;
+          default:
+            fontSize = 12
+            break;
         }
 
         return (
