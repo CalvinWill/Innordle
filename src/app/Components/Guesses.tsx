@@ -430,7 +430,7 @@ function Guess(props: GuessProps & { isLatest: boolean }) {
         }
 
 
-        let fontSize = 0;
+        let fontSize = 12;
         // Calculate font size based on content length
         switch (Math.floor(content.length / 10)) {
           case 10:
