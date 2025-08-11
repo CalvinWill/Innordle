@@ -430,8 +430,8 @@ function Guess(props: GuessProps & { isLatest: boolean }) {
         }
         // Calculate font size based on content length
         const minFontSize = 9;
-        const maxFontSize = 16;
-        const fontSize = Math.max(minFontSize, maxFontSize - Math.floor(content.length / 8));
+        const maxFontSize = 14;
+        const fontSize = Math.max(minFontSize, maxFontSize - Math.floor(content.length / 12));
 
         return (
           <div
