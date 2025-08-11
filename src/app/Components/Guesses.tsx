@@ -271,7 +271,7 @@ export type CellResponse = {
   response: "None" | "Match" | "Partial"
 }
 
-export function planRow({ todaysAnswer, allCharacterData, guess }: GuessProps): CellPlan[] {
+export function planRow({todaysAnswer, allCharacterData, guess}: GuessProps): CellPlan[] {
   // Call function to determine types in GuessDetail
   const allResponses: Map<string, string> = determineResponse({ todaysAnswer, guess, allCharacterData });
   const guessDetailsMap = getCharacterDetailsMap(guess, allCharacterData);
@@ -293,7 +293,7 @@ export function planRow({ todaysAnswer, allCharacterData, guess }: GuessProps): 
     }
 
     // Trusting `compareDetails` to satisfy this type
-    const tr = { type, response } as CellResponse;
+    const tr = {type, response} as CellResponse;
 
     return {
       guess,
@@ -428,47 +428,14 @@ function Guess(props: GuessProps & { isLatest: boolean }) {
             categoryStyling = "bg-green-500"
             break;
         }
-
-
-        let fontSize = 12;
         // Calculate font size based on content length
-        switch (Math.floor(content.length / 10)) {
-          case 10:
-            fontSize = 9
-            break;
-          case 9:
-            fontSize = 10
-            break;
-          case 8:
-            fontSize = 10
-            break;
-          case 7:
-            fontSize = 11
-            break;
-          case 6:
-            fontSize = 12
-            break
-          case 5:
-            fontSize = 12
-            break;
-          case 4:
-            fontSize = 13
-            break;
-          case 3:
-            fontSize = 14
-            break;
-          case 2:
-            fontSize = 14
-            break;
-          case 1:
-            fontSize = 15
-            break;
-          case 0:
-            fontSize = 15
-            break;
-          default:
-            fontSize = 12
-            break;
+        const minFontSize = 12;
+        const maxFontSize = 16;
+        let fontSize = Math.max(minFontSize, maxFontSize - Math.floor(content.length / 8));
+
+        // If content is really long, shrink more aggressively
+        if (content.length > 90) {
+          fontSize -= Math.floor((content.length - 90) / 5);
         }
 
         return (
