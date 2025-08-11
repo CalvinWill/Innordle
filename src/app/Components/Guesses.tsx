@@ -435,7 +435,7 @@ function Guess(props: GuessProps & { isLatest: boolean }) {
 
         // If content is really long, shrink more aggressively
         if (content.length > 90) {
-          fontSize -= 2;
+          fontSize -= 4;
           console.log(fontSize)
         }
 
