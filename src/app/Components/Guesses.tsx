@@ -271,7 +271,7 @@ export type CellResponse = {
   response: "None" | "Match" | "Partial"
 }
 
-export function planRow({todaysAnswer, allCharacterData, guess}: GuessProps): CellPlan[] {
+export function planRow({ todaysAnswer, allCharacterData, guess }: GuessProps): CellPlan[] {
   // Call function to determine types in GuessDetail
   const allResponses: Map<string, string> = determineResponse({ todaysAnswer, guess, allCharacterData });
   const guessDetailsMap = getCharacterDetailsMap(guess, allCharacterData);
@@ -293,7 +293,7 @@ export function planRow({todaysAnswer, allCharacterData, guess}: GuessProps): Ce
     }
 
     // Trusting `compareDetails` to satisfy this type
-    const tr = {type, response} as CellResponse;
+    const tr = { type, response } as CellResponse;
 
     return {
       guess,
@@ -428,10 +428,42 @@ function Guess(props: GuessProps & { isLatest: boolean }) {
             categoryStyling = "bg-green-500"
             break;
         }
+
+
+        let fontSize = 0;
         // Calculate font size based on content length
-        const minFontSize = 9;
-        const maxFontSize = 14;
-        const fontSize = Math.max(minFontSize, maxFontSize - Math.floor(content.length / 12));
+        switch (Math.floor(content.length / 10)) {
+          case 10:
+            fontSize = 9
+            break;
+          case 9:
+            fontSize = 10
+            break;
+          case 8:
+            fontSize = 10
+            break;
+          case 7:
+            fontSize = 11
+            break;
+          case 6:
+            fontSize = 12
+            break
+          case 5:
+            fontSize = 12
+            break;
+          case 4:
+            fontSize = 13
+            break;
+          case 3:
+            fontSize = 14
+            break;
+          case 2:
+            fontSize = 14
+            break;
+          case 1:
+            fontSize = 15
+            break;
+        }
 
         return (
           <div
