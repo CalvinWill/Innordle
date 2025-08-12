@@ -437,6 +437,12 @@ function Guess(props: GuessProps & { isLatest: boolean }) {
         if (content.length > 90) {
           fontSize -= 4;
           console.log(fontSize)
+        } else if (content.length > 80) {
+          fontSize -= 3;
+          console.log(fontSize)
+        } else if (content.length > 70) {
+          fontSize -= 3;
+          console.log(fontSize)
         }
 
         return (
