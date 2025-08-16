@@ -216,7 +216,7 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
 
     const position = useRef(0);
     const [showInput, setShowInput] = useState(false);
-    const [inputValue, setInputValue] = useState("Type your secret here..."); // initial text
+    const [inputValue, setInputValue] = useState("Type your secret here...");
 
     useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
@@ -231,7 +231,7 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
           position.current++;
 
           if (position.current === konamiCode.length) {
-            setShowInput(true); // show input instead of alert
+            setShowInput(true); // reveal input
             position.current = 0;
           }
         } else {
@@ -249,6 +249,12 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
         window.removeEventListener("keydown", handleKeyDown);
       };
     }, []);
+
+    const handleSubmit = () => {
+      // For now, log the value — replace with whatever you want
+      console.log("Submitted value:", inputValue);
+      alert(`You submitted: ${inputValue}`);
+    };
 
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -280,12 +286,19 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
                 onChange={(e) => setInputValue(e.target.value)}
                 className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-indigo-300"
               />
+              <button
+                onClick={handleSubmit}
+                className="mt-3 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow"
+              >
+                Submit
+              </button>
             </div>
           )}
         </div>
       </div>
     );
   }
+
   return (
     <div className="game flex flex-col items-center relative px-4">
       {showTheModal && (
