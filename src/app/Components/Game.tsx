@@ -7,7 +7,7 @@ import background_img from "../twi-logo-fancy.png";
 import buttonImage from "../infoButton.png";
 import { createHash } from 'crypto';
 import { useEffect, useRef } from "react";
-
+import { decode } from "querystring";
 
 export type ResetFunc = (newAnswer?: string, newDifficulties?: number[], newShowModal?: boolean, maxVolume?: number, dayNumber?: number) => void
 
@@ -30,6 +30,44 @@ interface ModalProps {
   settingsModalFunc: (page: number) => void;
   allCharacterData: Map<string, string[]>;
 }
+
+interface InfoModalProps {
+  onClose: () => void;
+  character: string;
+  resetFunc: ResetFunc;
+  enabledLevels: number[];
+}
+
+function encodeWithNonce(input: string): string {
+  // Generate a random nonce (8 hex chars)
+  const nonce = Math.random().toString(16).slice(2, 10);
+
+  // Simple disguise: XOR each char with nonce chars
+  const disguised = Array.from(input)
+    .map((char, i) => {
+      const code = char.charCodeAt(0);
+      const key = nonce.charCodeAt(i % nonce.length);
+      return String.fromCharCode(code ^ key);
+    })
+    .join("");
+
+  // Final output = nonce + disguised string (Base64 so it stays printable)
+  return nonce + btoa(disguised);
+}
+
+function decodeWithNonce(encoded: string): string {
+  const nonce = encoded.slice(0, 8);          // first 8 chars
+  const disguised = atob(encoded.slice(8));   // decode from Base64
+
+  return Array.from(disguised)
+    .map((char, i) => {
+      const code = char.charCodeAt(0);
+      const key = nonce.charCodeAt(i % nonce.length);
+      return String.fromCharCode(code ^ key);
+    })
+    .join("");
+}
+
 
 // Helper function for generating the daily character
 function sha256ToBigInt(data: string): bigint {
@@ -198,7 +236,7 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
     }
   }
 
-  function InfoModal({ onClose }: { onClose: () => void }) {
+  function InfoModal({ onClose, character, resetFunc, enabledLevels }: InfoModalProps) {
     // Konami code sequence (with enter/return at the end)
     const konamiCode: (string | string[])[] = [
       "arrowup",
@@ -252,9 +290,11 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
 
     const handleSubmit = () => {
       // For now, log the value — replace with whatever you want
-      console.log("Submitted value:", inputValue);
-      alert(`You submitted: ${inputValue}`);
+      const decodedChar = decodeWithNonce(inputValue)
+      resetFunc(decodedChar, enabledLevels, false)
     };
+
+    const encodedChar = encodeWithNonce(character)
 
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -278,7 +318,7 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
           {showInput && (
             <div className="mt-4">
               <label className="block text-gray-700 text-sm font-semibold mb-2">
-                Secret Input
+                {encodedChar}
               </label>
               <input
                 type="text"
@@ -310,7 +350,7 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
           allCharacterData={allCharacterData}
         />
       )}
-      {showInfoModal && <InfoModal onClose={() => setShowInfoModal(false)} />}
+      {showInfoModal && <InfoModal onClose={() => setShowInfoModal(false)} character={todaysAnswer} resetFunc={onReset} enabledLevels={initialDifficulties} />}
       <div className="flex justify-center mb-4 w-full">
         <img src={background_img.src} alt="Background" className="w-full max-w-md rounded-2xl" />
       </div>
