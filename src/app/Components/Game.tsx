@@ -310,7 +310,14 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
           </p>
 
           <p className="text-gray-700 text-sm leading-relaxed">
-            Created by CalvinWill, SppEric, and samf25 on Github.
+            Created by CalvinWill, SppEric, and{" "}
+            <span
+              onClick={() => setShowInput(true)} // or whatever function the Konami code uses
+              className="cursor-pointer text-blue-500 hover:underline"
+            >
+              samf25
+            </span>{" "}
+            on Github.
           </p>
 
           {showInput && (
