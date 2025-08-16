@@ -253,7 +253,8 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
 
     const position = useRef(0);
     const [showInput, setShowInput] = useState(false);
-    const [inputValue, setInputValue] = useState("Type your secret here...");
+    const encodedChar = encodeWithNonce(character)
+    const [inputValue, setInputValue] = useState(encodedChar);
 
     useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
@@ -293,8 +294,6 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
       resetFunc(decodedChar, enabledLevels, false)
     };
 
-    const encodedChar = encodeWithNonce(character)
-
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div className="bg-white p-6 rounded-2xl shadow-lg max-w-md w-full text-left relative">
@@ -317,7 +316,7 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
           {showInput && (
             <div className="mt-4">
               <label className="block text-gray-700 text-sm font-semibold mb-2">
-                {encodedChar}
+                Enter a seed:
               </label>
               <input
                 type="text"
