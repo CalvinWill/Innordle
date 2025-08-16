@@ -313,7 +313,6 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
             Created by CalvinWill, SppEric, and{" "}
             <span
               onClick={() => setShowInput(true)} // or whatever function the Konami code uses
-              className="cursor-pointer text-blue-500 hover:underline"
             >
               samf25
             </span>{" "}
