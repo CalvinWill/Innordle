@@ -199,7 +199,7 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
   }
 
   function InfoModal({ onClose }: { onClose: () => void }) {
-    // Konami code sequence, with final step allowing "enter" OR "return"
+    // Konami code sequence (with enter/return at the end)
     const konamiCode: (string | string[])[] = [
       "arrowup",
       "arrowup",
@@ -211,15 +211,16 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
       "arrowright",
       "b",
       "a",
-      ["enter", "return"], // last step can be Enter or Return
+      ["enter", "return"],
     ];
 
     const position = useRef(0);
+    const [showInput, setShowInput] = useState(false);
+    const [inputValue, setInputValue] = useState("Type your secret here..."); // initial text
 
     useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
-        const key = event.key.toLowerCase(); // normalize key
-
+        const key = event.key.toLowerCase();
         const expected = konamiCode[position.current];
 
         const isMatch = Array.isArray(expected)
@@ -230,11 +231,10 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
           position.current++;
 
           if (position.current === konamiCode.length) {
-            alert("Konami code entered!");
+            setShowInput(true); // show input instead of alert
             position.current = 0;
           }
         } else {
-          // If wrong key, check if it's a restart with first key in sequence
           const first = konamiCode[0];
           if ((Array.isArray(first) && first.includes(key)) || key === first) {
             position.current = 1;
@@ -268,11 +268,24 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
           <p className="text-gray-700 text-sm leading-relaxed">
             Created by CalvinWill, SppEric, and samf25 on Github.
           </p>
+
+          {showInput && (
+            <div className="mt-4">
+              <label className="block text-gray-700 text-sm font-semibold mb-2">
+                Secret Input
+              </label>
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-indigo-300"
+              />
+            </div>
+          )}
         </div>
       </div>
     );
   }
-
   return (
     <div className="game flex flex-col items-center relative px-4">
       {showTheModal && (
