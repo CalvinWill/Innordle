@@ -6,6 +6,8 @@ import WinScreen from "./WinScreen";
 import background_img from "../twi-logo-fancy.png";
 import buttonImage from "../infoButton.png";
 import { createHash } from 'crypto';
+import { useEffect, useRef } from "react";
+
 
 export type ResetFunc = (newAnswer?: string, newDifficulties?: number[], newShowModal?: boolean, maxVolume?: number, dayNumber?: number) => void
 
@@ -197,6 +199,57 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
   }
 
   function InfoModal({ onClose }: { onClose: () => void }) {
+    // Konami code sequence, with final step allowing "enter" OR "return"
+    const konamiCode: (string | string[])[] = [
+      "arrowup",
+      "arrowup",
+      "arrowdown",
+      "arrowdown",
+      "arrowleft",
+      "arrowright",
+      "arrowleft",
+      "arrowright",
+      "b",
+      "a",
+      ["enter", "return"], // last step can be Enter or Return
+    ];
+
+    const position = useRef(0);
+
+    useEffect(() => {
+      const handleKeyDown = (event: KeyboardEvent) => {
+        const key = event.key.toLowerCase(); // normalize key
+
+        const expected = konamiCode[position.current];
+
+        const isMatch = Array.isArray(expected)
+          ? expected.includes(key)
+          : key === expected;
+
+        if (isMatch) {
+          position.current++;
+
+          if (position.current === konamiCode.length) {
+            alert("Konami code entered!");
+            position.current = 0;
+          }
+        } else {
+          // If wrong key, check if it's a restart with first key in sequence
+          const first = konamiCode[0];
+          if ((Array.isArray(first) && first.includes(key)) || key === first) {
+            position.current = 1;
+          } else {
+            position.current = 0;
+          }
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }, []);
+
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div className="bg-white p-6 rounded-2xl shadow-lg max-w-md w-full text-left relative">
@@ -208,7 +261,8 @@ export default function Game({ todaysAnswer, allCharacterData, initialDifficulti
           </button>
           <h2 className="text-xl font-bold mb-4">About</h2>
           <p className="text-gray-700 text-sm leading-relaxed">
-            Inndle is a daily character-guessing game featuring characters from the web serial The Wandering Inn by Pirateaba.
+            Inndle is a daily character-guessing game featuring characters from
+            the web serial <em>The Wandering Inn</em> by Pirateaba.
           </p>
 
           <p className="text-gray-700 text-sm leading-relaxed">
