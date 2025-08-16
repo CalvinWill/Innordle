@@ -7,7 +7,6 @@ import background_img from "../twi-logo-fancy.png";
 import buttonImage from "../infoButton.png";
 import { createHash } from 'crypto';
 import { useEffect, useRef } from "react";
-import { decode } from "querystring";
 
 export type ResetFunc = (newAnswer?: string, newDifficulties?: number[], newShowModal?: boolean, maxVolume?: number, dayNumber?: number) => void
 
