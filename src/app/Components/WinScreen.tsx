@@ -15,8 +15,39 @@ interface WinScreenProps {
   maxVolume: number;
 }
 
+function encodeWithNonce(input: string): string {
+  // Generate a random nonce (8 hex chars)
+  const nonce = Math.random().toString(16).slice(2, 10);
+
+  // Simple disguise: XOR each char with nonce chars
+  const disguised = Array.from(input)
+    .map((char, i) => {
+      const code = char.charCodeAt(0);
+      const key = nonce.charCodeAt(i % nonce.length);
+      return String.fromCharCode(code ^ key);
+    })
+    .join("");
+
+  // Final output = nonce + disguised string (Base64 so it stays printable)
+  return nonce + btoa(disguised);
+}
+
+function decodeWithNonce(encoded: string): string {
+  const nonce = encoded.slice(0, 8);          // first 8 chars
+  const disguised = atob(encoded.slice(8));   // decode from Base64
+
+  return Array.from(disguised)
+    .map((char, i) => {
+      const code = char.charCodeAt(0);
+      const key = nonce.charCodeAt(i % nonce.length);
+      return String.fromCharCode(code ^ key);
+    })
+    .join("");
+}
+
 export default function WinScreen({ todaysAnswer, history, onFreePlay, daily, dayNumber, characterData, difficulties, gaveUp, setGiveUp, maxVolume }: WinScreenProps) {
   const [shared, setShared] = useState(false);
+  const [seedSaved, setSeedSaved] = useState(false); // 👈 new state
 
   // Helper function to generate a new character 
   const handleResetClick = () => {
@@ -51,30 +82,48 @@ export default function WinScreen({ todaysAnswer, history, onFreePlay, daily, da
     copyToClipboard(str).then(() => setShared(true));
   }
 
+  const saveSeed = () => {
+    const seed = encodeWithNonce(todaysAnswer);
+    navigator.clipboard.writeText(seed).then(() => setSeedSaved(true));
+  };
+
+
   return (
     <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md mb-6 text-center">
-      {gaveUp ? <h2 className="text-2xl font-bold text-red-600 mb-4">You gave up :(</h2> : <h2 className="text-2xl font-bold text-green-600 mb-4">You did it!</h2>}
+      {gaveUp ? (
+        <h2 className="text-2xl font-bold text-red-600 mb-4">You gave up :(</h2>
+      ) : (
+        <h2 className="text-2xl font-bold text-green-600 mb-4">You did it!</h2>
+      )}
+
       <div className="text-lg text-gray-700 mb-2">
         {daily ? "Today's answer was:" : "The answer was:"}
       </div>
-      <div className="text-2xl font-semibold text-black mb-4">
-        {todaysAnswer}
-      </div>
+      <div className="text-2xl font-semibold text-black mb-4">{todaysAnswer}</div>
       <div className="text-sm text-gray-600 mb-6">
         Number of tries: {history.length}
       </div>
+
       <button
         onClick={handleResetClick}
         className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition mb-2"
       >
         Play Again (Free Play)
       </button>
-      <div></div>
+
       <button
         onClick={shareResults}
-        className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl transition"
+        className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl transition mb-2"
       >
-        {shared ? 'Copied Results to Clipboard' : 'Share Results'}
+        {shared ? "Copied Results to Clipboard" : "Share Results"}
+      </button>
+
+      {/* NEW Save Seed button */}
+      <button
+        onClick={saveSeed}
+        className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl transition"
+      >
+        {seedSaved ? "Copied Seed to Clipboard" : "Save Seed"}
       </button>
     </div>
   );
