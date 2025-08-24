@@ -105,7 +105,7 @@ export default function WinScreen({ todaysAnswer, history, onFreePlay, daily, da
       </div>
 
       {/* Button group stacked vertically */}
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col items-stretch space-y-2">
         <button
           onClick={handleResetClick}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition"
