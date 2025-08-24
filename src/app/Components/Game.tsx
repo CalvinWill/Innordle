@@ -198,21 +198,22 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
             Free Play
           </button>
           <button
-            onClick={() => {
-              settingsModalFunc(0);
-            }}
+            onClick={() => { settingsModalFunc(0); }}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
           >
             Rules
           </button>
-
           <button
-            onClick={() => {
-              settingsModalFunc(1);
-            }}
+            onClick={() => { settingsModalFunc(1); }}
             className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
           >
             Spoiler Controls
+          </button>
+          <button
+            onClick={() => { settingsModalFunc(2); }}
+            className="col-span-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition"
+          >
+            Enter Seed
           </button>
         </div>
       </div>
