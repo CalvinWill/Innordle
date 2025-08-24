@@ -210,7 +210,7 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
             Spoiler Controls
           </button>
           <button
-            onClick={() => { settingsModalFunc(2); }}
+            onClick={() => { settingsModalFunc(3); }}
             className="col-span-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition"
           >
             Enter Seed
