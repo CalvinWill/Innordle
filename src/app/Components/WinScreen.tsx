@@ -70,7 +70,7 @@ export default function WinScreen({ todaysAnswer, history, onFreePlay, daily, da
   const shareResults = () => {
     const answer = daily ? `${dayNumber}` : todaysAnswer;
     const strIn = gaveUp ? `in X + ${history.length}` : `in ${history.length}`;
-    let str = `Wandering Inndle ${answer}: ${strIn}`;
+    let str = `Wandering Inndle ||${answer}||: ${strIn}`;
 
     str += '\n';
     str += history.map((guess) => {
@@ -105,8 +105,8 @@ export default function WinScreen({ todaysAnswer, history, onFreePlay, daily, da
       </div>
 
       {/* Button group stacked vertically */}
-      <div className="flex flex-col items-start space-y-2">
-        <div className="flex flex-col w-max">
+      <div className="flex justify-center">
+        <div className="flex flex-col w-max space-y-2">
           <button
             onClick={handleResetClick}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition w-full"
@@ -129,6 +129,7 @@ export default function WinScreen({ todaysAnswer, history, onFreePlay, daily, da
           </button>
         </div>
       </div>
+
     </div>
   );
 }
