@@ -92,7 +92,7 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
   const daysToCheck = 14;
   const usedIndexes = new Set<number>();
   const usedDate = new Date();
-  usedDate.setDate(usedDate.getDate() + 1)
+  //usedDate.setDate(usedDate.getDate() + 1)
 
 
   // Get list of indexes from the previous 14 days
@@ -121,8 +121,15 @@ function Modal({ onClose, resetFunc, setDaily, settingsModalFunc, allCharacterDa
     "2025-08-13": "Wil",
     "2025-08-14": "Rasea",
     "2025-08-15": "Larracel",
-    "2025-08-16": "Brunkr", //Was gonna repeat
-    "2025-08-23": "Revi", //Was gonna repeat
+    "2025-08-16": "Brunkr", //Was gonna repeat Tserre
+    "2025-08-17": "Drevish",
+    "2025-08-18": "Kevin",
+    "2025-08-19": "Emerrhain",
+    "2025-08-20": "Garia",
+    "2025-08-21": "Nanette",
+    "2025-08-22": "Tulm",
+    "2025-08-23": "Revi",
+    "2025-08-24": "Verdan",
   };
 
   // Date without time is automatically UTC.
