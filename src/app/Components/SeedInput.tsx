@@ -25,6 +25,7 @@ export default function SeedInput({ resetFunc, enabledLevels }: SeedInputProps) 
     const handleSubmit = () => {
         try {
             const decodedChar = decodeWithNonce(inputValue);
+            console.log(decodedChar)
             resetFunc(decodedChar, enabledLevels, false);
         } catch {
             alert("Invalid seed");
