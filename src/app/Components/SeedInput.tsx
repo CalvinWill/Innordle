@@ -2,31 +2,35 @@
 import { useState } from "react";
 
 function decodeWithNonce(encoded: string): string {
-  const nonce = encoded.slice(0, 8);          // first 8 chars
-  const disguised = atob(encoded.slice(8));   // decode from Base64
+    const nonce = encoded.slice(0, 8);          // first 8 chars
+    const disguised = atob(encoded.slice(8));   // decode from Base64
 
-  return Array.from(disguised)
-    .map((char, i) => {
-      const code = char.charCodeAt(0);
-      const key = nonce.charCodeAt(i % nonce.length);
-      return String.fromCharCode(code ^ key);
-    })
-    .join("");
+    return Array.from(disguised)
+        .map((char, i) => {
+            const code = char.charCodeAt(0);
+            const key = nonce.charCodeAt(i % nonce.length);
+            return String.fromCharCode(code ^ key);
+        })
+        .join("");
 }
 
 interface SeedInputProps {
     resetFunc: (newAnswer?: string, newDifficulties?: number[], newShowModal?: boolean) => void;
     enabledLevels: number[];
+    allCharacterData: Map<string, string[]>;
 }
 
-export default function SeedInput({ resetFunc, enabledLevels }: SeedInputProps) {
+export default function SeedInput({ resetFunc, enabledLevels, allCharacterData }: SeedInputProps) {
     const [inputValue, setInputValue] = useState("");
 
     const handleSubmit = () => {
         try {
             const decodedChar = decodeWithNonce(inputValue);
-            console.log(decodedChar)
-            resetFunc(decodedChar, enabledLevels, false);
+            if (allCharacterData.has(decodedChar)) {
+                resetFunc(decodedChar, enabledLevels, false);
+            } else {
+                alert("Invalid seed")
+            }
         } catch {
             alert("Invalid seed");
         }
