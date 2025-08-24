@@ -105,27 +105,29 @@ export default function WinScreen({ todaysAnswer, history, onFreePlay, daily, da
       </div>
 
       {/* Button group stacked vertically */}
-      <div className="flex flex-col items-stretch space-y-2">
-        <button
-          onClick={handleResetClick}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition"
-        >
-          Play Again (Free Play)
-        </button>
+      <div className="flex flex-col items-start space-y-2">
+        <div className="flex flex-col w-max">
+          <button
+            onClick={handleResetClick}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition w-full"
+          >
+            Play Again (Free Play)
+          </button>
 
-        <button
-          onClick={shareResults}
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl transition"
-        >
-          {shared ? "Copied Results to Clipboard" : "Share Results"}
-        </button>
+          <button
+            onClick={shareResults}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl transition w-full"
+          >
+            {shared ? "Copied Results to Clipboard" : "Share Results"}
+          </button>
 
-        <button
-          onClick={saveSeed}
-          className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl transition"
-        >
-          {seedSaved ? "Copied Seed to Clipboard" : "Save Seed"}
-        </button>
+          <button
+            onClick={saveSeed}
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl transition w-full"
+          >
+            {seedSaved ? "Copied Seed to Clipboard" : "Save Seed"}
+          </button>
+        </div>
       </div>
     </div>
   );
