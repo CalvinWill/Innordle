@@ -318,7 +318,7 @@ export default function SettingsModal({ onClose, initialSettings, onSettingsChan
                         enabledLevels={Object.entries(settings)
                             .filter(([, value]) => value)
                             .map(([key]) => Number(key.replace("difficultyCheckbox", "")))} 
-                        />
+                        allCharacterData={allCharacterData}/>
                     </div>
                 )}
             </div>
