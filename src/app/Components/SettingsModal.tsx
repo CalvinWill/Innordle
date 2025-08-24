@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import SeedInput from "./SeedInput";
 
 interface SettingsModalProps {
     onClose: () => void;
@@ -32,7 +33,7 @@ const spoilerGroups: Record<string, string[]> = {
 
 export default function SettingsModal({ onClose, initialSettings, onSettingsChange, resetFunction, allCharacterData, toggleCategoryFunc, displayedCategories, settingsPage = 0, settingsModalFunc, maxVolume }: SettingsModalProps) {
     const [settings, setSettings] = useState(initialSettings);
-    const tabOptions = ["rules", "categories", "difficulties"];
+    const tabOptions = ["rules", "categories", "difficulties", "seed"];
     const [activeTab, setActiveTab] = useState(tabOptions[settingsPage]);
     const [dropdownValue, setDropdownValue] = useState(maxVolume);
 
@@ -93,18 +94,21 @@ export default function SettingsModal({ onClose, initialSettings, onSettingsChan
                 <div className="flex border-b mb-4">
                     {tabOptions.map((tabKey) => (
                         <button
-                            key={tabKey}
-                            className={`flex-1 p-2 text-center transition font-medium ${activeTab === tabKey
-                                    ? "bg-gray-200 text-black border-b-2 border-blue-500"
-                                    : "text-gray-500 hover:bg-gray-100"
-                                }`}
-                            onClick={() => setActiveTab(tabKey)}
+                        key={tabKey}
+                        className={`flex-1 p-2 text-center transition font-medium ${
+                            activeTab === tabKey
+                            ? "bg-gray-200 text-black border-b-2 border-blue-500"
+                            : "text-gray-500 hover:bg-gray-100"
+                        }`}
+                        onClick={() => setActiveTab(tabKey)}
                         >
-                            {tabKey === "rules"
-                                ? "Rules"
-                                : tabKey === "categories"
-                                    ? "Spoiler Settings"
-                                    : "Difficulty Settings"}
+                        {tabKey === "rules"
+                            ? "Rules"
+                            : tabKey === "categories"
+                            ? "Spoiler Settings"
+                            : tabKey === "difficulties"
+                            ? "Difficulty Settings"
+                            : "Seed Input"} {/* 👈 label for new tab */}
                         </button>
                     ))}
                 </div>
@@ -302,6 +306,19 @@ export default function SettingsModal({ onClose, initialSettings, onSettingsChan
                         >
                             Save & Reset
                         </button>
+                    </div>
+                )}
+                {activeTab === "seed" && (
+                    <div className="flex flex-col items-center">
+                        <h2 className="text-lg font-semibold text-center mb-4">Enter Seed</h2>
+                        <SeedInput
+                        resetFunc={(newAnswer, newDifficulties, newShowModal) =>
+                            resetFunction(newAnswer, newDifficulties, newShowModal, dropdownValue)
+                        }
+                        enabledLevels={Object.entries(settings)
+                            .filter(([, value]) => value)
+                            .map(([key]) => Number(key.replace("difficultyCheckbox", "")))} 
+                        />
                     </div>
                 )}
             </div>
