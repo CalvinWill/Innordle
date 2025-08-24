@@ -32,18 +32,18 @@ function encodeWithNonce(input: string): string {
   return nonce + btoa(disguised);
 }
 
-function decodeWithNonce(encoded: string): string {
-  const nonce = encoded.slice(0, 8);          // first 8 chars
-  const disguised = atob(encoded.slice(8));   // decode from Base64
+// function decodeWithNonce(encoded: string): string {
+//   const nonce = encoded.slice(0, 8);          // first 8 chars
+//   const disguised = atob(encoded.slice(8));   // decode from Base64
 
-  return Array.from(disguised)
-    .map((char, i) => {
-      const code = char.charCodeAt(0);
-      const key = nonce.charCodeAt(i % nonce.length);
-      return String.fromCharCode(code ^ key);
-    })
-    .join("");
-}
+//   return Array.from(disguised)
+//     .map((char, i) => {
+//       const code = char.charCodeAt(0);
+//       const key = nonce.charCodeAt(i % nonce.length);
+//       return String.fromCharCode(code ^ key);
+//     })
+//     .join("");
+// }
 
 export default function WinScreen({ todaysAnswer, history, onFreePlay, daily, dayNumber, characterData, difficulties, gaveUp, setGiveUp, maxVolume }: WinScreenProps) {
   const [shared, setShared] = useState(false);
