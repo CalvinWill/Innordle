@@ -104,27 +104,29 @@ export default function WinScreen({ todaysAnswer, history, onFreePlay, daily, da
         Number of tries: {history.length}
       </div>
 
-      <button
-        onClick={handleResetClick}
-        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition mb-2"
-      >
-        Play Again (Free Play)
-      </button>
+      {/* Button group stacked vertically */}
+      <div className="flex flex-col space-y-2">
+        <button
+          onClick={handleResetClick}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition"
+        >
+          Play Again (Free Play)
+        </button>
 
-      <button
-        onClick={shareResults}
-        className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl transition mb-2"
-      >
-        {shared ? "Copied Results to Clipboard" : "Share Results"}
-      </button>
+        <button
+          onClick={shareResults}
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl transition"
+        >
+          {shared ? "Copied Results to Clipboard" : "Share Results"}
+        </button>
 
-      {/* NEW Save Seed button */}
-      <button
-        onClick={saveSeed}
-        className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl transition"
-      >
-        {seedSaved ? "Copied Seed to Clipboard" : "Save Seed"}
-      </button>
+        <button
+          onClick={saveSeed}
+          className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl transition"
+        >
+          {seedSaved ? "Copied Seed to Clipboard" : "Save Seed"}
+        </button>
+      </div>
     </div>
   );
 }
